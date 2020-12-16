@@ -550,14 +550,14 @@ python-versions = "*"
 name = "yapf"
 version = "0.30.0"
 description = "A formatter for Python code."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "86061739a24f4c39b734e4f72eff6de8ee37d3ba64e9699aecec5b54415f069a"
+content-hash = "9315fc54585a5097de799d0759ebbcc9c3e35cc744762a4adb4320e077e040c6"
 
 [metadata.files]
 aniso8601 = [

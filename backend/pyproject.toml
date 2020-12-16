@@ -30,7 +30,6 @@ isort = "5.6.4"
 jdcal = "1.4.1"
 lazy-object-proxy = "1.4.3"
 lxml = "4.5.2"
-mccabe = "0.6.1"
 mod-wsgi = "4.7.1"
 mongoengine = "0.20.0"
 mwclient = "0.10.1"
@@ -53,10 +52,12 @@ Unidecode = "1.1.1"
 urllib3 = "1.25.10"
 uWSGI = "2.0.19.1"
 wrapt = "1.12.1"
-yapf = "0.30.0"
 termwikiimporter = {path = "../../langtech/tools/TermWikiImporter"}
 
 [tool.poetry.dev-dependencies]
+yapf = "0.30.0"
+mccabe = "0.6.1"
+isort = "5.6.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
