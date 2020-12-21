@@ -50,9 +50,9 @@ sqlparse = "0.3.1"
 toml = "0.10.1"
 Unidecode = "1.1.1"
 urllib3 = "1.25.10"
-uWSGI = "2.0.19.1"
 wrapt = "1.12.1"
 termwikiimporter = {path = "../../langtech/tools/TermWikiImporter"}
+gunicorn = "^20.0.4"
 
 [tool.poetry.dev-dependencies]
 yapf = "0.30.0"
