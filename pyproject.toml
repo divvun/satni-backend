@@ -51,7 +51,7 @@ toml = "0.10.1"
 Unidecode = "1.1.1"
 urllib3 = "1.25.10"
 wrapt = "1.12.1"
-termwikiimporter = {path = "../../langtech/tools/TermWikiImporter"}
+termwikiimporter = {path = "../langtech/tools/TermWikiImporter"}
 gunicorn = "^20.0.4"
 
 [tool.poetry.dev-dependencies]

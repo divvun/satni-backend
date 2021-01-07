@@ -514,7 +514,7 @@ pyyaml = "*"
 
 [package.source]
 type = "directory"
-url = "../../langtech/tools/TermWikiImporter"
+url = "../langtech/tools/TermWikiImporter"
 
 [[package]]
 name = "toml"
