@@ -267,8 +267,7 @@ def make_dicts():
 
 def import_sammalahti():
     print(f'Pekka Sammallahtis sme-fin dictionary')
-    xml_file = os.path.join(os.getenv('HOME'),
-                            'repos/sammallahti/sammallahti.xml')
+    xml_file = os.path.join('../sammallahti/sammallahti.xml')
     try:
         print(f'\t{os.path.basename(xml_file)}')
         parser = etree.XMLParser(remove_comments=True)
