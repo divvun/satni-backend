@@ -34,11 +34,11 @@ class Query(graphene.ObjectType):
                 uff.append(str(value))
         LOGGER.info(' '.join(uff))
 
-        filter = Q(stem__istartswith=search)
+        filter = Q(search_stem__istartswith=search)
 
-        by_stem = Stem.objects(filter).order_by('stem')
+        by_search_stem = Stem.objects(filter).order_by('search_stem')
         by_src_langs = [
-            s for s in by_stem
+            s for s in by_search_stem
             if any([srclang in wanted for srclang in s.srclangs])
         ]
         by_target_langs = [

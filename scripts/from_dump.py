@@ -4,9 +4,10 @@ import os
 import re
 import sys
 
+from lxml import etree
+
 from dicts.models import DictEntry, ExampleGroup, Restriction, TranslationGroup
 from lemmas.models import Lemma
-from lxml import etree
 from mongoengine.errors import ValidationError
 from stems.models import Stem
 from terms.models import Concept, Term
@@ -41,7 +42,7 @@ def sammallahti_replacer(line):
     """Replace special characters found in Sammallahti's dictionary."""
     return sammallahti_remover(line).translate(
         str.maketrans('Èéíïēīĵĺōūḥḷṃṇṿạẹọụÿⓑⓓⓖ·ṛü’ ',
-        'Eeiieijlouhlmrvaeouybdg ru\' '))
+                      'Eeiieijlouhlmrvaeouybdg ru\' '))
 
 
 def make_lemma(lang, expression):
@@ -285,6 +286,7 @@ def make_stems():
     for stem in STEMS:
         try:
             s = Stem(stem=stem,
+                     search_stem=stem.lower(),
                      srclangs=list(STEMS[stem]['fromlangs']),
                      targetlangs=list(STEMS[stem]['tolangs']),
                      dicts=list(STEMS[stem]['dicts']))
