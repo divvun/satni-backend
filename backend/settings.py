@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'graphene_mongo',
     'lemmas',
     'terms',
-    'mod_wsgi.server',
 ]
 
 MIDDLEWARE = [
