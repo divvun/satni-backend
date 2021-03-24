@@ -1,1 +1,11 @@
 +VAbess -> +V+VAbess
++Ger    -> +V+Ger
+^+N+G3, ^+N+G7, ^+N+Ess, ^+N+Nomag, ^+N+Sg, ^+N+Pl   -> +N+Sg+Nom
+^+A+Sg, ^+A+Pl, ^+A+Attr, +A+Ess -> +A+Sg+Nom
+^+V+Ind, ^+V+Imprt, ^+V+Cond, ^+V+Pot, ^+V+PrfPrc, ^+V+PrsPrc -> +V+Inf
+^+V+Actio -> +V+Actio+Nom
+^+A+Ord -> +A+Ord+Sg+Nom
+^+V+VGen -> +V+VGen
+^+N+Attr -> +N+Attr
+
+^+V+Inf, ^+V+Neg, ^+Pcle, ^+Po, +Pr, ^+N+Symbol, ^+N+Prop, ^+N+Coll, ^+CC, ^+CLD, ^+CS, ^+Interj, ^+Adv, ^+PUNCT, ^+Num, ^+A+ABBR, ^+N+ABBR, ^+N+ACR, ^+Pron, +V+Abbr -> ta bare første del
