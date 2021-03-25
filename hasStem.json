@@ -1,0 +1,7 @@
+{
+  "operationName": "HasStem",
+  "variables": {
+    "stem": "biila"
+  },
+  "query":"query HasStem($stem: String!) { hasStem(exact: $stem) { stem } }"
+}

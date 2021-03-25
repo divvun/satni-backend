@@ -1,0 +1,34 @@
+{
+  "operationName": "AllLemmas",
+  "variables": {
+    "inputValue": "arg",
+    "wantedLangs": [
+      "sme",
+      "smj",
+      "smn",
+      "sms",
+      "fin",
+      "nob",
+      "swe",
+      "lat",
+      "eng",
+      "nno",
+      "sma"
+    ],
+    "wantedDicts": [
+      "termwiki",
+      "gtsmenob",
+      "gtnobsme",
+      "gtnobsma",
+      "gtsmanob",
+      "gtsmefin",
+      "gtfinsme",
+      "gtsmesmn",
+      "gtsmnsme",
+      "sammallahtismefin",
+      "gtfinsmn",
+      "gtsmnfin"
+    ]
+  },
+  "query": "query AllLemmas($inputValue: String!, $wantedLangs: [String]!, $wantedDicts: [String]!, $after: String ) { stemList(first:100, search: $inputValue, wanted: $wantedLangs, wantedDicts: $wantedDicts after: $after ) { totalCount edges { node { stem srclangs targetlangs } } pageInfo { endCursor hasNextPage } } }"
+}
