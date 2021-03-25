@@ -7,7 +7,7 @@ import hfst
 
 ATTS = re.compile(r'@[^@]+@')
 PX = re.compile(r'\+Px.+$')
-FOC = re.compile(r'\+Foc/\w+$')
+FOC = re.compile(r'\+Foc/[\w-]+$')
 
 
 class Lemmatiser(object):
