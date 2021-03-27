@@ -8,57 +8,106 @@ import hfst
 ATTS = re.compile(r'@[^@]+@')
 PX = re.compile(r'\+Px.+$')
 FOC = re.compile(r'\+Foc/[\w-]+$')
+VERSION = re.compile(r'\+v\d')
+SEM = re.compile(r'\+Sem/[^+]+')
+ADJECTIVE = re.compile(r'^\+A\+(Sg|Pl|Attr|Ess)')
+NOUN = re.compile(r'^\+N\+(Sg|Pl|Attr|Ess|G3|G7|Nomag)')
+VERB = re.compile(r'^\+V\+(Inf|Ind|Imprt|Cond|Pot|PrfPrc|PrsPrc)')
 
 
 class Lemmatiser(object):
-    def __init__(self):
+    def __init__(self, lang):
         """Initialise HFST analysers."""
         self.analysers = {}
         self.generators = {}
-        for path in Path('/usr/share/giella/').glob('???'):
-            self.analysers[path.name] = hfst.HfstInputStream(
-                str(path / 'analyser-gt-desc.hfstol')).read()
-            self.generators[path.name] = hfst.HfstInputStream(
-                str(path / 'generator-gt-desc.hfstol')).read()
+        path = Path('/usr/share/giella') / lang
+        self.analyser = hfst.HfstInputStream(
+            str(path / 'analyser-gt-desc.hfstol')).read()
+        self.generator = hfst.HfstInputStream(
+            str(path / 'generator-gt-desc.hfstol')).read()
 
-    def generate_der(self, language, part):
-        der_pos = part.find('Der/')
-        next_pos = part[der_pos:].find('+')
+    def analyse(self, word):
+        """Analyse word."""
+        return (ATTS.sub('', analysis[0])
+                for analysis in self.analyser.lookup(word)
+                if '?' not in analysis[0] and '+Err' not in analysis[0])
 
-        uff = f'{part[:der_pos + next_pos]}+N+Sg+Nom'
-        for p in self.generators[language].lookup(uff):
-            clean = ATTS.sub('', p[0])
-            yield clean
+    def clean_analysis(self, analysis):
+        """Clean analysis for use in ending_tags."""
+        return SEM.sub('', VERSION.sub('', FOC.sub('', PX.sub(
+            '', analysis)))).replace('+IV', '').replace('+TV', '')
 
-    def clean_analysis(self, language, analysis):
-        """Clean an analysis."""
-        cleaned = FOC.sub('', PX.sub('', ATTS.sub('', analysis)))
+    def ending_tags(self, cleaned_input):
+        """Find the ending tags of cleaned_input."""
+        if '+Der/' in cleaned_input:
+            der_pos = cleaned_input.rfind('Der/')
+            next_pos = cleaned_input[der_pos:].find('+')
+            return cleaned_input[der_pos + next_pos:]
 
-        pre, suf = cleaned.rsplit('+Cmp#', maxsplit=1)
-        print(pre, suf)
+        tag = cleaned_input.find('+')
+        return cleaned_input[tag:]
 
-        if '+Der/' not in cleaned:
-            yield cleaned.split('+')[0]
+    def classify(self, ending_tags):
+        """Classify PoS according to ending_tags."""
+        if 'VABess' in ending_tags:
+            return '+V+VABess'
 
-        elif '+Der/' in cleaned:
-            for der in self.generate_der(language, cleaned):
-                yield der
+        if '+Ger' in ending_tags:
+            return '+V+Ger'
 
-        else:
-            yield cleaned
+        if '+V+Actio' in ending_tags:
+            return '+V+Actio+Nom'
 
-    def lemmatise(self, language, word):
+        if '+V+VGen' in ending_tags:
+            return '+V+VGen'
+
+        if '+A+Ord' in ending_tags:
+            return '+A+Ord+Sg+Nom'
+
+        if '+N+Attr' in ending_tags:
+            return '+N+Attr'
+
+        if VERB.match(ending_tags):
+            return '+V+Inf'
+
+        if ADJECTIVE.match(ending_tags):
+            return '+A+Sg+Nom'
+
+        if NOUN.match(ending_tags):
+            return '+N+Sg+Nom'
+
+        raise SystemExit(f'classify {ending_tags}')
+
+    def remove_last_tags(self, analysis):
+        """Remove last tags from analysis."""
+        if '+Der/' in analysis:
+            der_pos = analysis.rfind('Der/')
+            next_pos = analysis[der_pos:].find('+')
+            return analysis[:der_pos + next_pos]
+
+        tag = analysis.find('+')
+        return analysis[:tag]
+
+    def generate(self, analysis):
+        """Generate word forms from the ending_tags."""
+        start = self.remove_last_tags(analysis)
+        ending_tags = self.classify(
+            self.ending_tags(self.clean_analysis(analysis)))
+
+        return (
+            ATTS.sub('', generated[0])
+            for generated in self.generator.lookup(f'{start}{ending_tags}'))
+
+    def lemmatise(self, word):
         """Lemmatize word using a descriptive analyser."""
-        analyses = self.analysers[language].lookup(word)
         return sorted(
             set([
-                p.strip() for analysis in analyses
-                for p in self.clean_analysis(language, analysis[0])
-                if p.strip()
+                generated for analysis in self.analyse(word)
+                for generated in self.generate(analysis)
             ]))
 
 
 if __name__ == '__main__':
-    lemmatiser = Lemmatiser()
-    for p in lemmatiser.lemmatise(sys.argv[1], sys.argv[2]):
+    lemmatiser = Lemmatiser(sys.argv[1])
+    for p in lemmatiser.lemmatise(sys.argv[2]):
         print(f'«{p}»')
