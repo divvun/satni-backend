@@ -28,7 +28,8 @@ class TestLemmatiser(unittest.TestCase):
 
     @params(('sme', 'vuolgin', ['vuolgi', 'vuolgin']),
             ('sme', 'vuolgimat', ['vuolgit', 'vuolgi', 'vuolgin']),
-            ('sme', 'biillat', ['biila']))
+            ('sme', 'biillat', ['biila']),
+            ('sme', 'biiladoaibmandiliide', ['biiladoaibmandilli']))
     def test_lemmatiser(self, language, word, exptected_results):
         assert self.lemmatisers[language].lemmatise(word) == sorted(
             exptected_results)

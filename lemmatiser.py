@@ -90,13 +90,20 @@ class Lemmatiser(object):
 
     def generate(self, analysis):
         """Generate word forms from the ending_tags."""
-        start = self.remove_last_tags(analysis)
-        ending_tags = self.classify(
-            self.ending_tags(self.clean_analysis(analysis)))
+        if '+Cmp#' in analysis:
+            parts = analysis.rsplit('+Cmp#', maxsplit=1)
+            cmp = f'{parts[0]}+Cmp#'
+            suff = parts[1]
+        else:
+            cmp = ''
+            suff = analysis
 
-        return (
-            ATTS.sub('', generated[0])
-            for generated in self.generator.lookup(f'{start}{ending_tags}'))
+        start = self.remove_last_tags(suff)
+        ending_tags = self.classify(self.ending_tags(
+            self.clean_analysis(suff)))
+
+        return (ATTS.sub('', generated[0]) for generated in
+                self.generator.lookup(f'{cmp}{start}{ending_tags}'))
 
     def lemmatise(self, word):
         """Lemmatize word using a descriptive analyser."""
