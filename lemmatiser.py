@@ -24,7 +24,7 @@ class Lemmatiser(object):
         self.analyser = hfst.HfstInputStream(
             str(path / 'analyser-gt-desc.hfstol')).read()
         self.generator = hfst.HfstInputStream(
-            str(path / 'generator-gt-desc.hfstol')).read()
+            str(path / 'generator-gt-norm.hfstol')).read()
 
     def analyse(self, word):
         """Analyse word."""
