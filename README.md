@@ -96,14 +96,14 @@ Edit `lemmas.json` to experiment with the query.
 
 Get dictionary and terminology articles.
 
-Download [articles.json](artibles.json) and run the command:
+Download [articles.json](articles.json) and run the command:
 
 ```bash
 curl https://satni.uit.no/newsatni/ \
 -H 'Content-Type: application/json' \
 -H 'Accept: application/json' \
 --compressed \
---data-binary '@lemmas.json'
+--data-binary '@articles.json'
 ```
 
 This command looks for articles that has `bil` as a lookup word. The variable `lemma` is used to define this. `lemma` must be an exact hit, usually this is fetched from the stemlist.
