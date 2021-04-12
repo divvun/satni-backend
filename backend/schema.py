@@ -4,9 +4,10 @@ import dicts.schema
 import lemmas.schema
 import stems.schema
 import terms.schema
+import lemmatiser.schema
 
 
-class Query(stems.schema.Query, dicts.schema.Query, terms.schema.Query,
+class Query(stems.schema.Query, dicts.schema.Query, lemmatiser.schema.Query, terms.schema.Query,
             graphene.ObjectType):
     pass
 
