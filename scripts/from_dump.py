@@ -211,29 +211,41 @@ def make_translation_groups(translation_groups, target):
     ]
 
 
+def add_to_stems(lemma, dictname, src, target):
+    if not STEMS.get(lemma):
+        STEMS[lemma] = {}
+        STEMS[lemma]['fromlangs'] = set()
+        STEMS[lemma]['tolangs'] = set()
+        STEMS[lemma]['dicts'] = set()
+
+    STEMS[lemma]['dicts'].add(f'{dictname}{src}{target}')
+    STEMS[lemma]['fromlangs'].add(src)
+    STEMS[lemma]['tolangs'].add(target)
+
+
 def make_entries(dictxml, dictname, src, target):
     for entry in dictxml.iter('e'):
         if entry.get('src') != 'gg':
-            d = DictEntry(dictName=f'{dictname}{src}{target}',
-                          srcLang=src,
-                          targetLang=target,
-                          lookupLemmas=make_lemmas(entry.xpath('.//l'), src),
-                          translationGroups=make_translation_groups(
-                              entry.xpath('.//tg'), target))
+            dict_entry = DictEntry(dictName=f'{dictname}{src}{target}',
+                                   srcLang=src,
+                                   targetLang=target,
+                                   lookupLemmas=make_lemmas(
+                                       entry.xpath('.//l'), src),
+                                   translationGroups=make_translation_groups(
+                                       entry.xpath('.//tg'), target))
 
-            for lookupLemma in d.lookupLemmas:
-                lemma = sammallahti_replacer(lookupLemma.lemma)
-                if not STEMS.get(lemma):
-                    STEMS[lemma] = {}
-                    STEMS[lemma]['fromlangs'] = set()
-                    STEMS[lemma]['tolangs'] = set()
-                    STEMS[lemma]['dicts'] = set()
+            for lookup_lemma in dict_entry.lookupLemmas:
+                add_to_stems(sammallahti_replacer(lookup_lemma.lemma),
+                             dictname, src, target)
 
-                STEMS[lemma]['dicts'].add(f'{dictname}{src}{target}')
-                STEMS[lemma]['fromlangs'].add(src)
-                STEMS[lemma]['tolangs'].add(target)
+            if dictname == 'sammallahti':
+                for translation_group in dict_entry.translationGroups:
+                    for translation_lemma in translation_group.translationLemmas:
+                        add_to_stems(
+                            sammallahti_replacer(translation_lemma.lemma),
+                            dictname, src, target)
 
-            d.save()
+            dict_entry.save()
 
 
 def import_dict(pair):
