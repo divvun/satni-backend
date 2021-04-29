@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "satni_backend"
-version = "1.2.3"
+version = "1.2.5"
 description = "Backend for sátni.org"
 authors = ["Børre Gaup <albbas@gmail.com>"]
 license = "GPLv3+"
