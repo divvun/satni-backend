@@ -238,12 +238,10 @@ def make_entries(dictxml, dictname, src, target):
                 add_to_stems(sammallahti_replacer(lookup_lemma.lemma),
                              dictname, src, target)
 
-            if dictname == 'sammallahti':
-                for translation_group in dict_entry.translationGroups:
-                    for translation_lemma in translation_group.translationLemmas:
-                        add_to_stems(
-                            sammallahti_replacer(translation_lemma.lemma),
-                            dictname, src, target)
+            for translation_group in dict_entry.translationGroups:
+                for translation_lemma in translation_group.translationLemmas:
+                    add_to_stems(sammallahti_replacer(translation_lemma.lemma),
+                                 dictname, src, target)
 
             dict_entry.save()
 
