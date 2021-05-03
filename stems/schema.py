@@ -44,9 +44,9 @@ class Query(graphene.ObjectType):
                 log_info.append(str(value))
         LOGGER.info(' '.join(log_info))
 
-        filter = get_search_filter(kwargs.get('mode'), search)
+        search_filter = get_search_filter(kwargs.get('mode'), search)
 
-        by_search_stem = Stem.objects(filter).order_by('search_stem')
+        by_search_stem = Stem.objects(search_filter).order_by('search_stem')
         by_src_langs = [
             s for s in by_search_stem
             if any([srclang in wanted for srclang in s.srclangs])
