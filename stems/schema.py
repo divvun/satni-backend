@@ -1,3 +1,4 @@
+"""Queries for stem models."""
 import logging
 
 import graphene
