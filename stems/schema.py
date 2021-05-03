@@ -10,6 +10,16 @@ from .types import StemType
 LOGGER = logging.getLogger(__name__)
 
 
+def get_search_filter(mode, search):
+    if mode == 'middle':
+        return Q(search_stem__icontains=search)
+
+    if mode == 'end':
+        return Q(search_stem__iendswith=search)
+
+    return Q(search_stem__istartswith=search)
+
+
 class Query(graphene.ObjectType):
     stem_list = MongoengineConnectionField(
         StemType,
@@ -34,7 +44,7 @@ class Query(graphene.ObjectType):
                 log_info.append(str(value))
         LOGGER.info(' '.join(log_info))
 
-        filter = Q(search_stem__istartswith=search)
+        filter = get_search_filter(kwargs.get('mode'), search)
 
         by_search_stem = Stem.objects(filter).order_by('search_stem')
         by_src_langs = [
