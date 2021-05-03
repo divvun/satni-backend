@@ -25,14 +25,14 @@ class Query(graphene.ObjectType):
         wanted = kwargs['wanted']
         wanted_dicts = kwargs['wanted_dicts']
 
-        uff = [search]
+        log_info = [search]
         for key, value in kwargs.items():
-            uff.append(f'{key}:')
+            log_info.append(f'{key}:')
             if isinstance(value, list):
-                uff.append(', '.join(sorted(value)))
+                log_info.append(', '.join(sorted(value)))
             else:
-                uff.append(str(value))
-        LOGGER.info(' '.join(uff))
+                log_info.append(str(value))
+        LOGGER.info(' '.join(log_info))
 
         filter = Q(search_stem__istartswith=search)
 
