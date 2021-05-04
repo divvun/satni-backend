@@ -212,15 +212,18 @@ def make_translation_groups(translation_groups, target):
 
 
 def add_to_stems(lemma, dictname, src, target):
-    if not STEMS.get(lemma):
-        STEMS[lemma] = {}
-        STEMS[lemma]['fromlangs'] = set()
-        STEMS[lemma]['tolangs'] = set()
-        STEMS[lemma]['dicts'] = set()
+    if '(+' not in lemma:
+        if not STEMS.get(lemma):
+            STEMS[lemma] = {}
+            STEMS[lemma]['fromlangs'] = set()
+            STEMS[lemma]['tolangs'] = set()
+            STEMS[lemma]['dicts'] = set()
 
-    STEMS[lemma]['dicts'].add(f'{dictname}{src}{target}')
-    STEMS[lemma]['fromlangs'].add(src)
-    STEMS[lemma]['tolangs'].add(target)
+        STEMS[lemma]['dicts'].add(f'{dictname}{src}{target}')
+        STEMS[lemma]['fromlangs'].add(src)
+        STEMS[lemma]['tolangs'].add(target)
+    else:
+        print(lemma)
 
 
 def make_entries(dictxml, dictname, src, target):
