@@ -312,8 +312,6 @@ def import_sammalahti():
 
 
 def make_stems():
-    c = 0
-    c2 = 0
     for stem in STEMS:
         try:
             s = Stem(stem=stem,
@@ -325,14 +323,6 @@ def make_stems():
         except ValidationError as error:
             print(error)
             print(stem)
-
-        c2 += 1
-    #     print(stem)
-    #     if len(STEMS[stem]['fromlangs']) > 1:
-    #         c += 1
-    #     print('\t', STEMS[stem]['fromlangs'])
-    #     print('\t', STEMS[stem]['tolangs'])
-    # print('more than one in tolangs:', c, c2)
 
 
 def run():
