@@ -231,7 +231,10 @@ def add_to_stems(lemma, dictname, src, target):
         print(lemma)
 
 
-def make_entries(dictxml, dictname, src, target):
+def make_entries(dictxml, dictname):
+    pair = dictxml.getroot().get('id')
+    src = pair[:3]
+    target = pair[3:]
     for entry in dictxml.iter('e'):
         if entry.get('src') != 'gg':
             dict_entry = DictEntry(dictName=f'{dictname}{src}{target}',
@@ -256,16 +259,13 @@ def make_entries(dictxml, dictname, src, target):
 
 def import_dictfile(xml_file):
     print(f'\t{os.path.basename(xml_file)}')
-    parser = etree.XMLParser(remove_comments=True, dtd_validation=True)
-    dictxml = etree.parse(xml_file, parser=parser)
-    pair = dictxml.getroot().get('id')
-    make_entries(dictxml, dictname='gt', src=pair[:3], target=pair[3:])
+    dictxml = parse_xmlfile(xml_file)
+    make_entries(dictxml, dictname='gt')
 
 
 def validate_dictfile(xml_file):
     try:
-        parser = etree.XMLParser(remove_comments=True, dtd_validation=True)
-        dictxml = etree.parse(xml_file, parser=parser)
+        dictxml = parse_xmlfile(xml_file)
         pair = dictxml.getroot().get('id')
         if pair not in xml_file:
             return f'{xml_file}:\n\tinvalid id: {pair}'
@@ -294,14 +294,17 @@ def import_dicts():
         import_dictfile(xml_file)
 
 
+def parse_xmlfile(xml_file):
+    parser = etree.XMLParser(remove_comments=True)
+    return etree.parse(xml_file, parser=parser)
+
+
 def import_sammalahti():
     print(f'Pekka Sammallahtis sme-fin dictionary')
     xml_file = os.path.join('../sammallahti/sammallahti.xml')
     try:
         print(f'\t{os.path.basename(xml_file)}')
-        parser = etree.XMLParser(remove_comments=True)
-        dictxml = etree.parse(xml_file, parser=parser)
-        make_entries(dictxml, dictname='sammallahti', src='sme', target='fin')
+        make_entries(parse_xmlfile(xml_file), dictname='sammallahti')
     except etree.XMLSyntaxError as error:
         print('Syntax error in {} '
               'with the following error:\n{}\n'.format(xml_file, error),
