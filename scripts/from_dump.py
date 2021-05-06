@@ -32,6 +32,11 @@ LANGS = {
     'sms': 'sms',
 }
 
+DICTS = [
+    'smenob', 'nobsme', 'nobsma', 'smanob', 'smefin', 'finsme', 'smesmn',
+    'smnsme', 'finsmn', 'smnfin', 'finnob'
+]
+
 
 def sammallahti_remover(line):
     """Remove Sammallahti's special characters."""
@@ -249,34 +254,44 @@ def make_entries(dictxml, dictname, src, target):
             dict_entry.save()
 
 
-def import_dict(pair):
-    print(f'Import Giellatekno {pair} dictionary')
-    dict_root = os.path.join(os.getenv('GTHOME'), 'words/dicts', pair, 'src')
-    for xml_file in glob.glob(dict_root + '/*.xml'):
-        if not xml_file.endswith('meta.xml') and 'Der_' not in xml_file:
-            # TODO: handle Der_ files
-            try:
-                print(f'\t{os.path.basename(xml_file)}')
-                parser = etree.XMLParser(remove_comments=True,
-                                         dtd_validation=True)
-                dictxml = etree.parse(xml_file, parser=parser)
-                make_entries(dictxml,
-                             dictname='gt',
-                             src=pair[:3],
-                             target=pair[3:])
-            except etree.XMLSyntaxError as error:
-                print('Syntax error in {} '
-                      'with the following error:\n{}\n'.format(
-                          xml_file, error),
-                      file=sys.stderr)
+def import_dictfile(xml_file):
+    print(f'\t{os.path.basename(xml_file)}')
+    parser = etree.XMLParser(remove_comments=True, dtd_validation=True)
+    dictxml = etree.parse(xml_file, parser=parser)
+    pair = dictxml.getroot().get('id')
+    make_entries(dictxml, dictname='gt', src=pair[:3], target=pair[3:])
 
 
-def make_dicts():
-    for pair in [
-            'smenob', 'nobsme', 'nobsma', 'smanob', 'smefin', 'finsme',
-            'smesmn', 'smnsme', 'finsmn', 'smnfin', 'finnob'
-    ]:
-        import_dict(pair)
+def validate_dictfile(xml_file):
+    try:
+        parser = etree.XMLParser(remove_comments=True, dtd_validation=True)
+        dictxml = etree.parse(xml_file, parser=parser)
+        pair = dictxml.getroot().get('id')
+        if pair not in xml_file:
+            return f'{xml_file}:\n\tinvalid id: {pair}'
+    except etree.XMLSyntaxError as error:
+        return f'{xml_file}:\n\t{error}'
+
+
+def invalid_dicts():
+    for xml_file in dict_paths():
+        invalid = validate_dictfile(xml_file)
+        if invalid is not None:
+            yield invalid
+
+
+def dict_paths():
+    return [
+        xml_file for pair in DICTS for xml_file in glob.glob(
+            os.path.join(os.getenv('GTHOME'), 'words/dicts', pair, 'src') +
+            '/*.xml')
+        if not xml_file.endswith('meta.xml') and 'Der_' not in xml_file
+    ]
+
+
+def import_dicts():
+    for xml_file in dict_paths():
+        import_dictfile(xml_file)
 
 
 def import_sammalahti():
@@ -318,7 +333,11 @@ def make_stems():
 
 
 def run():
+    invalids = [invalid for invalid in invalid_dicts()]
+    if invalids:
+        raise SystemExit('Invalid dicts, stopping import:\n{}'.format(
+            '\n'.join(invalids)))
     import_sammalahti()
-    make_dicts()
+    import_dicts()
     make_m()
     make_stems()
