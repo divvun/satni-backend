@@ -25,6 +25,7 @@ class Query(graphene.ObjectType):
     stem_list = MongoengineConnectionField(
         StemType,
         search=graphene.String(),
+        mode=graphene.String(),
         wanted=graphene.List(graphene.String),
         wanted_dicts=graphene.List(graphene.String))
     has_stem = graphene.List(StemType,
