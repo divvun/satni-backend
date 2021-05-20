@@ -27,10 +27,26 @@ class Query(graphene.ObjectType):
         search=graphene.String(),
         wanted=graphene.List(graphene.String),
         wanted_dicts=graphene.List(graphene.String))
-    has_stem = graphene.List(StemType, exact=graphene.String())
+    has_stem = graphene.List(StemType,
+                             exact=graphene.String(),
+                             wanted=graphene.List(graphene.String),
+                             wanted_dicts=graphene.List(graphene.String))
 
     def resolve_has_stem(self, info, exact, **kwargs):
-        return Stem.objects(stem=exact)
+        by_exact_stem = Stem.objects(stem=exact)
+        wanted = kwargs['wanted']
+        wanted_dicts = kwargs['wanted_dicts']
+
+        by_target_langs = [
+            s for s in by_exact_stem
+            if any([targetlang in wanted for targetlang in s.targetlangs])
+        ]
+        by_wanted_dicts = [
+            s for s in by_target_langs
+            if any([dict in wanted_dicts for dict in s.dicts])
+        ]
+
+        return by_wanted_dicts
 
     def resolve_stem_list(self, info, search, **kwargs):
         wanted = kwargs['wanted']
