@@ -12,11 +12,16 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Query(graphene.ObjectType):
-    concept_list = graphene.List(ConceptType,
-                                 exact=graphene.String(),
-                                 wanted=graphene.List(graphene.String))
+    concept_list = graphene.List(
+        ConceptType,
+        exact=graphene.String(),
+        src_langs=graphene.List(graphene.String),
+        target_langs=graphene.List(graphene.String),
+    )
 
-    def resolve_concept_list(self, info, exact, wanted, **kwargs):
+    def resolve_concept_list(self, info, exact, **kwargs):
+        src_langs = kwargs['src_langs']
+        target_langs = kwargs['target_langs']
         names = [
             concept.name for concept in Concept.objects(
                 terms__expression__in=Lemma.objects(lemma=exact))
@@ -27,8 +32,8 @@ class Query(graphene.ObjectType):
 
         # lat is omitted from this list, we always want it,
         # unless it is explicitely omitted from the wanted list.
-        non_sami = ['eng', 'fin', 'nob', 'nno', 'swe']
-        lemma_langs = [l.language for l in Lemma.objects(lemma=exact)]
+        # non_sami = ['eng', 'fin', 'nob', 'nno', 'swe']
+        # lemma_langs = [l.language for l in Lemma.objects(lemma=exact)]
 
         name_queries = [Q(name=name) for name in names]
         name_filter = name_queries.pop()
@@ -38,11 +43,11 @@ class Query(graphene.ObjectType):
         named = Concept.objects(name_filter)
         wanted_by_lang = [
             name for name in named
-            if name.terms[0].expression.language in wanted
+            if name.terms[0].expression.language in src_langs
+            or name.terms[0].expression.language in target_langs
         ]
 
-        if wanted_by_lang:
-            LOGGER.info(f'{exact} '
-                        f'langs: {", ".join(sorted(wanted))}')
+        # if wanted_by_target_lang:
+        #     LOGGER.info(f'{exact} ' f'langs: {", ".join(sorted(wanted))}')
 
         return wanted_by_lang

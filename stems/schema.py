@@ -26,21 +26,23 @@ class Query(graphene.ObjectType):
         StemType,
         search=graphene.String(),
         mode=graphene.String(),
-        wanted=graphene.List(graphene.String),
+        src_langs=graphene.List(graphene.String),
+        target_langs=graphene.List(graphene.String),
         wanted_dicts=graphene.List(graphene.String))
     has_stem = graphene.List(StemType,
                              exact=graphene.String(),
-                             wanted=graphene.List(graphene.String),
+                             src_langs=graphene.List(graphene.String),
+                             target_langs=graphene.List(graphene.String),
                              wanted_dicts=graphene.List(graphene.String))
 
     def resolve_has_stem(self, info, exact, **kwargs):
         by_exact_stem = Stem.objects(stem=exact)
-        wanted = kwargs['wanted']
+        target_langs = kwargs['target_langs']
         wanted_dicts = kwargs['wanted_dicts']
 
         by_target_langs = [
-            s for s in by_exact_stem
-            if any([targetlang in wanted for targetlang in s.targetlangs])
+            s for s in by_exact_stem if any(
+                [targetlang in target_langs for targetlang in s.targetlangs])
         ]
         by_wanted_dicts = [
             s for s in by_target_langs
@@ -50,7 +52,8 @@ class Query(graphene.ObjectType):
         return by_wanted_dicts
 
     def resolve_stem_list(self, info, search, **kwargs):
-        wanted = kwargs['wanted']
+        src_langs = kwargs['src_langs']
+        target_langs = kwargs['target_langs']
         wanted_dicts = kwargs['wanted_dicts']
 
         log_info = [search]
@@ -67,11 +70,11 @@ class Query(graphene.ObjectType):
         by_search_stem = Stem.objects(search_filter).order_by('search_stem')
         by_src_langs = [
             s for s in by_search_stem
-            if any([srclang in wanted for srclang in s.srclangs])
+            if any([srclang in src_langs for srclang in s.srclangs])
         ]
         by_target_langs = [
-            s for s in by_src_langs
-            if any([targetlang in wanted for targetlang in s.targetlangs])
+            s for s in by_src_langs if any(
+                [targetlang in target_langs for targetlang in s.targetlangs])
         ]
         by_wanted_dicts = [
             s for s in by_target_langs
