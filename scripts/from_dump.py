@@ -309,6 +309,8 @@ def import_sammalahti():
         print('Syntax error in {} '
               'with the following error:\n{}\n'.format(xml_file, error),
               file=sys.stderr)
+    except OSError:
+        print('Continuing without Sammallahti\'s dictionary')
 
 
 def make_stems():
