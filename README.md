@@ -14,7 +14,7 @@ This is a [Django](https://www.djangoproject.com/) backend for [sátni.org](http
 ```bash
 poetry install # install dependencies
 poetry run python manage.py migrate # migrate the database
-poetry run python manage.py from_dump # import content from langtech
+poetry run python manage.py runscript from_dump # import content from langtech
 ```
 
 ## Development
