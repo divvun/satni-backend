@@ -2,7 +2,20 @@
   "operationName": "AllLemmas",
   "variables": {
     "inputValue": "arg",
-    "wantedLangs": [
+    "srcLangs": [
+      "sme",
+      "smj",
+      "smn",
+      "sms",
+      "fin",
+      "nob",
+      "swe",
+      "lat",
+      "eng",
+      "nno",
+      "sma"
+    ],
+    "targetLangs": [
       "sme",
       "smj",
       "smn",
@@ -30,5 +43,5 @@
       "gtsmnfin"
     ]
   },
-  "query": "query AllLemmas($inputValue: String!, $wantedLangs: [String]!, $wantedDicts: [String]!, $after: String ) { stemList(first:100, search: $inputValue, wanted: $wantedLangs, wantedDicts: $wantedDicts after: $after ) { totalCount edges { node { stem srclangs targetlangs } } pageInfo { endCursor hasNextPage } } }"
+  "query": "query AllLemmas($inputValue: String!, $srcLangs: [String]!, $targetLangs: [String]!, $wantedDicts: [String]!, $after: String ) { stemList(first:100, search: $inputValue, srcLangs: $srcLangs, targetLangs: $targetLangs, wantedDicts: $wantedDicts after: $after ) { totalCount edges { node { stem srclangs targetlangs } } pageInfo { endCursor hasNextPage } } }"
 }

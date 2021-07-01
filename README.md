@@ -35,6 +35,8 @@ The startup of this repo was the [Django and GraphQL intro](https://www.howtogra
 
 # Queries
 
+The examples below query the production server. If you'd like to do queries on the development server, use the url `http://localhost:8000/graphql/` instead of `https://satni.uit.no/newsatni/`
+
 Get all the possible queries
 
 ```bash
@@ -87,7 +89,7 @@ curl https://satni.uit.no/newsatni/ \
 ```
 
 This command looks for first hundred search words starting with "arg" from our database. The variable `inputValue` is used to define what we look for.
-The list `wantedLangs` tells which languages we both do the search in and want an answer for.
+The list `srcLangs` tells which languages the search word should be in, the list `targetLangs` tells which languages the search should have a translation for.
 The list `wantedDicts` tells which dictionaries we would like answers from.
 
 Edit `lemmas.json` to experiment with the query.
@@ -107,7 +109,7 @@ curl https://satni.uit.no/newsatni/ \
 ```
 
 This command looks for articles that has `bil` as a lookup word. The variable `lemma` is used to define this. `lemma` must be an exact hit, usually this is fetched from the stemlist.
-The list `wantedLangs` tells which languages we both do the search in and want an answer for.
+The list `srcLangs` tells which languages the lookup word should be in, the list `targetLangs` tells which languages the lookup word should have a translation for.
 The list `wantedDicts` tells which dictionaries we would like answers from.
 
 Edit `articles.json` to experiment with the query.
@@ -115,6 +117,8 @@ Edit `articles.json` to experiment with the query.
 ## hasStem
 
 Used to decide whether `stem` is in the stemList. In [satni-frontend](https://github.com/divvun/satni-frontend) this is used to decide if a reverse lookup can be done from a translation.
+The list `targetLangs` tells which languages the lookup word should have a translation for.
+The list `wantedDicts` tells which dictionaries we would like answers from.
 
 Download [hasStem.json](hasStem.json) and run the command:
 

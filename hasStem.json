@@ -1,7 +1,34 @@
 {
   "operationName": "HasStem",
   "variables": {
-    "stem": "biila"
+    "stem": "biila",
+    "targetLangs": [
+      "sme",
+      "smj",
+      "smn",
+      "sms",
+      "fin",
+      "nob",
+      "swe",
+      "lat",
+      "eng",
+      "nno",
+      "sma"
+    ],
+    "wantedDicts": [
+      "termwiki",
+      "gtsmenob",
+      "gtnobsme",
+      "gtnobsma",
+      "gtsmanob",
+      "gtsmefin",
+      "gtfinsme",
+      "gtsmesmn",
+      "gtsmnsme",
+      "sammallahtismefin",
+      "gtfinsmn",
+      "gtsmnfin"
+    ]
   },
-  "query":"query HasStem($stem: String!) { hasStem(exact: $stem) { stem } }"
+  "query": "query HasStem($stem: String!, $targetLangs: [String]!,  $wantedDicts: [String]!) { hasStem(exact: $stem targetLangs: $targetLangs wantedDicts: $wantedDicts) { stem } }"
 }
