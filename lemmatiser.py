@@ -107,11 +107,11 @@ class Lemmatiser(object):
 
     def lemmatise(self, word):
         """Lemmatize word using a descriptive analyser."""
-        return sorted(
-            set([
-                generated for analysis in self.analyse(word)
-                for generated in self.generate(analysis)
-            ]))
+        return sorted({
+            generated
+            for analysis in self.analyse(word)
+            for generated in self.generate(analysis)
+        })
 
 
 if __name__ == '__main__':
