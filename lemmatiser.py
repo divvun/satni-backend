@@ -6,16 +6,28 @@ from pathlib import Path
 import hfst
 
 ATTS = re.compile(r'@[^@]+@')
-PX = re.compile(r'\+Px.+$')
-FOC = re.compile(r'\+Foc/[\w-]+$')
-VERSION = re.compile(r'\+v\d')
-SEM = re.compile(r'\+Sem/[^+]+')
 ADJECTIVE = re.compile(r'^\+A\+(Sg|Pl|Attr|Ess)')
-NOUN = re.compile(r'^\+N\+(Sg|Pl|Attr|Ess|G3|G7|Nomag)')
+NOUN = re.compile(r'^\+N\+(Sg|Pl|Attr|Ess|G3|G7|NomAg)')
 VERB = re.compile(r'^\+V\+(Inf|Ind|Imprt|Cond|Pot|PrfPrc|PrsPrc)')
+
+REMOVEABLE_REGEX_TAGS = {
+    'adjective_comp_superl': (re.compile(r'\+A\+Der/(Comp|Superl)'), ''),
+    'semantic': (re.compile(r'\+Sem/[^+]+'), ''),
+    'possesive_suffix': (re.compile(r'\+Px.+$'), ''),
+    'foc': (re.compile(r'\+Foc/[\w-]+$'), ''),
+    'version': (re.compile(r'\+v\d'), '')
+}
+
+REMOVEABLE_TAGS = {
+    'transitivity': ('+TV', ''),
+    'intransitivity': ('+IV', ''),
+    'qst': ('+Qst', ''),
+    'subqst': ('+Subqst', '')
+}
 
 
 class Lemmatiser(object):
+    """Given a wordform and a language, spit out possible wordforms."""
     def __init__(self, lang):
         """Initialise HFST analysers."""
         self.analysers = {}
@@ -26,18 +38,31 @@ class Lemmatiser(object):
         self.generator = hfst.HfstInputStream(
             str(path / 'generator-gt-norm.hfstol')).read()
 
-    def analyse(self, word):
-        """Analyse word."""
+    def analyse(self, word) -> list[str]:
+        """Analyse word.
+
+        Args:
+            word: a word that should be analysed
+
+        Returns:
+            list: a list of hfst analyses
+        """
         return (ATTS.sub('', analysis[0])
                 for analysis in self.analyser.lookup(word)
                 if '?' not in analysis[0] and '+Err' not in analysis[0])
 
-    def clean_analysis(self, analysis):
+    @staticmethod
+    def clean_analysis(analysis):
         """Clean analysis for use in ending_tags."""
-        return SEM.sub('', VERSION.sub('', FOC.sub('', PX.sub(
-            '', analysis)))).replace('+IV', '').replace('+TV', '')
+        for tagregex, replacement in REMOVEABLE_REGEX_TAGS.values():
+            analysis = tagregex.sub(replacement, analysis)
+        for tag, replacement in REMOVEABLE_TAGS.values():
+            analysis = analysis.replace(tag, replacement)
 
-    def ending_tags(self, cleaned_input):
+        return analysis
+
+    @staticmethod
+    def ending_tags(cleaned_input):
         """Find the ending tags of cleaned_input."""
         if '+Der/' in cleaned_input:
             der_pos = cleaned_input.rfind('Der/')
@@ -47,25 +72,34 @@ class Lemmatiser(object):
         tag = cleaned_input.find('+')
         return cleaned_input[tag:]
 
-    def classify(self, ending_tags):
+    @staticmethod
+    def classify(ending_tags):
         """Classify PoS according to ending_tags."""
-        if 'VABess' in ending_tags:
-            return '+V+VABess'
+        containing_tags = {
+            'VABess': '+V+VABess',
+            '+Ger': '+V+Ger',
+            '+V+Actio': '+V+Actio+Nom',
+            '+V+VGen': '+V+VGen',
+            '+A+Ord': '+A+Ord+Sg+Nom',
+            '+N+Attr': '+N+Attr',
+            '+N+Prop': '+N+Prop+Sg+Nom',
+            '+N+Coll': '+N+Coll+Sg+Nom',
+            '+N+ABBR': '+N+ABBR+Sg+Nom',
+            '+N+NomAg': '+N+NomAg+Sg+Nom',
+            '+N+ACR': '+N+ACR+Sg+Nom',
+            '+Adv+ABBR': '+Adv+ABBR'
+        }
 
-        if '+Ger' in ending_tags:
-            return '+V+Ger'
+        containing_tags.update(
+            {f'+Num+{tag}': '+Num+Sg+Nom'
+             for tag in ['Sg', 'Pl', 'Ess']})
 
-        if '+V+Actio' in ending_tags:
-            return '+V+Actio+Nom'
+        for tags, replacement in containing_tags.items():
+            if tags in ending_tags:
+                return replacement
 
-        if '+V+VGen' in ending_tags:
-            return '+V+VGen'
-
-        if '+A+Ord' in ending_tags:
-            return '+A+Ord+Sg+Nom'
-
-        if '+N+Attr' in ending_tags:
-            return '+N+Attr'
+        if ending_tags.endswith('+Adv'):
+            return '+Adv'
 
         if VERB.match(ending_tags):
             return '+V+Inf'
@@ -76,9 +110,10 @@ class Lemmatiser(object):
         if NOUN.match(ending_tags):
             return '+N+Sg+Nom'
 
-        raise SystemExit(f'classify {ending_tags}')
+        return None
 
-    def remove_last_tags(self, analysis):
+    @staticmethod
+    def remove_last_tags(analysis):
         """Remove last tags from analysis."""
         if '+Der/' in analysis:
             der_pos = analysis.rfind('Der/')
@@ -90,6 +125,9 @@ class Lemmatiser(object):
 
     def generate(self, analysis):
         """Generate word forms from the ending_tags."""
+        if analysis.startswith('ii+'):
+            return [analysis.split('+')[0]]
+
         if '+Cmp#' in analysis:
             parts = analysis.rsplit('+Cmp#', maxsplit=1)
             cmp = f'{parts[0]}+Cmp#'
@@ -98,12 +136,22 @@ class Lemmatiser(object):
             cmp = ''
             suff = analysis
 
-        start = self.remove_last_tags(suff)
-        ending_tags = self.classify(self.ending_tags(
-            self.clean_analysis(suff)))
+        start = self.remove_last_tags(
+            REMOVEABLE_REGEX_TAGS['adjective_comp_superl'][0].sub('', suff))
+        ending_tags = self.ending_tags(self.clean_analysis(suff))
+
+        if any(
+                ending_tags.startswith(f'+{tag}')
+                for tag in ['Po', 'Pr', 'Interj', 'CS', 'CC', 'Pcle']):
+            return [analysis.split('+')[0]]
+
+        classified_tags = self.classify(ending_tags)
+
+        if classified_tags is None:
+            raise ValueError(f'Can not handle: {analysis}')
 
         return (ATTS.sub('', generated[0]) for generated in
-                self.generator.lookup(f'{cmp}{start}{ending_tags}'))
+                self.generator.lookup(f'{cmp}{start}{classified_tags}'))
 
     def lemmatise(self, word):
         """Lemmatize word using a descriptive analyser."""
