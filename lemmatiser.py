@@ -1,4 +1,4 @@
-# Lemmatise incoming words
+"""Lemmatise incoming words"""
 import re
 import sys
 from pathlib import Path
