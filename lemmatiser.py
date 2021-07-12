@@ -92,9 +92,9 @@ class Lemmatiser:
             {f'+Num+{tag}': '+Num+Sg+Nom'
              for tag in ['Sg', 'Pl', 'Ess']})
 
-        for tags, replacement in containing_tags.items():
+        for tags, classification in containing_tags.items():
             if tags in ending_tags:
-                return replacement
+                return classification
 
         if ending_tags.endswith('+Adv'):
             return '+Adv'
