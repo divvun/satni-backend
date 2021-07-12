@@ -35,7 +35,7 @@ class TestLemmatiser(unittest.TestCase):
     """Test the lemmatiser."""
     def setUp(self):
         self.lemmatisers = {}
-        self.lemmatisers['sme'] = lemmatiser.Lemmatiser('sme')
+        self.lemmatisers['sme'] = lemmatiser.lemmatiser('sme')
 
     @params(('sme', 'vuolgin', ['vuolgi', 'vuolgin']),
             ('sme', 'vuolgimat', ['vuolgit', 'vuolgi', 'vuolgin']),

@@ -87,6 +87,15 @@ class Lemmatiser:
                 for analysis in self.analyser.lookup(word)
                 if '?' not in analysis[0] and '+Err' not in analysis[0])
 
+    def lemmatise(self, word):
+        """Lemmatize word using a descriptive analyser."""
+        return sorted(
+            {analysis.split('+')[0]
+             for analysis in self.analyse(word)})
+
+
+class SmeLemmatiser(Lemmatiser):
+    """Given a wordform and a language, spit out possible wordforms."""
     @staticmethod
     def clean_analysis(analysis):
         """Clean analysis for use in ending_tags."""
@@ -167,7 +176,13 @@ class Lemmatiser:
         })
 
 
+def lemmatiser(language):
+    """Get a language specific lemmatiser."""
+    return Lemmatiser(language) if language != 'sme' else SmeLemmatiser(
+        language)
+
+
 if __name__ == '__main__':
-    lemmatiser = Lemmatiser(sys.argv[1])
-    for p in lemmatiser.lemmatise(sys.argv[2]):
+    this_lemmatiser = lemmatiser(sys.argv[1])
+    for p in this_lemmatiser.lemmatise(sys.argv[2]):
         print(f'«{p}»')
