@@ -24,8 +24,8 @@ class TestRegexes(unittest.TestCase):
     @params(('+A+Der/Comp+A+Sg+Nom', '+A+Sg+Nom'),
             ('+A+Der/Superl+A+Sg+Nom', '+A+Sg+Nom'))
     def test_adj_comp_subj(self, test_value, expected):
-        assert lemmatiser.REMOVEABLE_REGEX_TAGS['adjective_comp_superl'][
-            0].sub('', test_value) == expected
+        assert lemmatiser.REMOVEABLE_REGEX_TAGS['adjective_comp_superl'].sub(
+            '', test_value) == expected
 
 
 class TestLemmatiser(unittest.TestCase):
