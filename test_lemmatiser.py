@@ -5,30 +5,34 @@ from nose2.tools import params
 import lemmatiser
 
 
-class TestRegexes(unittest.TestCase):
+class TestSmeRegexes(unittest.TestCase):
+    def setUp(self):
+        self.lemmatiser = lemmatiser.lemmatiser('sme')
+
     """Check that the regexes matches what they are supposed to."""
+
     @params('+A+Sg+Nom', '+A+Pl+Nom', '+A+Attr', '+A+Ess')
     def test_adjective(self, adjective_value):
-        assert lemmatiser.CLASSIFICATIONS['adjective'].regex.match(
+        assert self.lemmatiser.classifications['adjective'].regex.match(
             adjective_value) is not None
 
     @params('+N+Sg+Nom', '+N+Pl+Nom', '+N+Attr', '+N+Ess', '+N+G3', '+N+G7',
             '+N+Ess', '+N+NomAg')
     def test_noun(self, adjective_value):
-        assert lemmatiser.CLASSIFICATIONS['noun'].regex.match(
+        assert self.lemmatiser.classifications['noun'].regex.match(
             adjective_value) is not None
 
     @params('+V+Ind', '+V+Imprt', '+V+Cond', '+V+Pot', '+V+PrfPrc', '+V+Inf',
             '+V+PrsPrc')
     def test_verb(self, verb_value):
-        assert lemmatiser.CLASSIFICATIONS['verb'].regex.match(
+        assert self.lemmatiser.classifications['verb'].regex.match(
             verb_value) is not None
 
     @params(('+A+Der/Comp+A+Sg+Nom', '+A+Sg+Nom'),
             ('+A+Der/Superl+A+Sg+Nom', '+A+Sg+Nom'))
     def test_adj_comp_subj(self, test_value, expected):
-        assert lemmatiser.REMOVABLE_REGEX_TAGS['adjective_comp_superl'].sub(
-            '', test_value) == expected
+        assert self.lemmatiser.removable_regex_tags[
+            'adjective_comp_superl'].sub('', test_value) == expected
 
 
 class TestLemmatiser(unittest.TestCase):
