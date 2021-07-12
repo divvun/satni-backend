@@ -9,17 +9,20 @@ class TestRegexes(unittest.TestCase):
     """Check that the regexes matches what they are supposed to."""
     @params('+A+Sg+Nom', '+A+Pl+Nom', '+A+Attr', '+A+Ess')
     def test_adjective(self, adjective_value):
-        assert lemmatiser.ADJECTIVE.match(adjective_value) is not None
+        assert lemmatiser.CLASSIFICATIONS['adjective'].regex.match(
+            adjective_value) is not None
 
     @params('+N+Sg+Nom', '+N+Pl+Nom', '+N+Attr', '+N+Ess', '+N+G3', '+N+G7',
             '+N+Ess', '+N+NomAg')
     def test_noun(self, adjective_value):
-        assert lemmatiser.NOUN.match(adjective_value) is not None
+        assert lemmatiser.CLASSIFICATIONS['noun'].regex.match(
+            adjective_value) is not None
 
     @params('+V+Ind', '+V+Imprt', '+V+Cond', '+V+Pot', '+V+PrfPrc', '+V+Inf',
             '+V+PrsPrc')
     def test_verb(self, verb_value):
-        assert lemmatiser.VERB.match(verb_value) is not None
+        assert lemmatiser.CLASSIFICATIONS['verb'].regex.match(
+            verb_value) is not None
 
     @params(('+A+Der/Comp+A+Sg+Nom', '+A+Sg+Nom'),
             ('+A+Der/Superl+A+Sg+Nom', '+A+Sg+Nom'))

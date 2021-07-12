@@ -1,14 +1,52 @@
 """Lemmatise incoming words"""
 import re
 import sys
+from collections import namedtuple
 from pathlib import Path
 
 import hfst
 
 ATTS = re.compile(r'@[^@]+@')
-ADJECTIVE = re.compile(r'^\+A\+(Sg|Pl|Attr|Ess)')
-NOUN = re.compile(r'^\+N\+(Sg|Pl|Attr|Ess|G3|G7|NomAg)')
-VERB = re.compile(r'^\+V\+(Inf|Ind|Imprt|Cond|Pot|PrfPrc|PrsPrc)')
+
+Classification = namedtuple('Classification', 'regex classification')
+CLASSIFICATIONS = {
+    'verb_abessive':
+    Classification(re.compile(r'.*VABess.*'), '+V+VABess'),
+    'verb_gerundium':
+    Classification(re.compile(r'.*\+Ger.*'), '+V+Ger'),
+    'verb_action_form':
+    Classification(re.compile(r'.*\+V\+Actio.*'), '+V+Actio+Nom'),
+    'verb_genitive':
+    Classification(re.compile(r'.*\+V\+VGen.*'), '+V+VGen'),
+    'adjective_ordinal_number':
+    Classification(re.compile(r'.*\+A\+Ord.*'), '+A+Ord+Sg+Nom'),
+    'attributive':
+    Classification(re.compile(r'.*\+N\+Attr.*'), '+N+Attr'),
+    'propernoun':
+    Classification(re.compile(r'.*\+N\+Prop.*'), '+N+Prop+Sg+Nom'),
+    'collective_numeral':
+    Classification(re.compile(r'.*\+N\+Coll.*'), '+N+Coll+Sg+Nom'),
+    'noun_abbreviation':
+    Classification(re.compile(r'.*\+N\+ABBR.*'), '+N+ABBR+Sg+Nom'),
+    'nomen_agentis':
+    Classification(re.compile(r'.*\+N\+NomAg.*'), '+N+NomAg+Sg+Nom'),
+    'noun_acronym':
+    Classification(re.compile(r'.*\+N\+ACR.*'), '+N+ACR+Sg+Nom'),
+    'adverb_abbreviation':
+    Classification(re.compile(r'.*\+Adv\+ABBR.*'), '+Adv+ABBR'),
+    'numeral':
+    Classification(re.compile(r'.*\+Num\+(Sg|Pl|Ess)'), '+Num+Sg+Nom'),
+    'adverb':
+    Classification(re.compile(r'.*\+Adv$'), '+Adv'),
+    'verb':
+    Classification(re.compile(r'^\+V\+(Inf|Ind|Imprt|Cond|Pot|PrfPrc|PrsPrc)'),
+                   '+V+Inf'),
+    'adjective':
+    Classification(re.compile(r'^\+A\+(Sg|Pl|Attr|Ess)'), '+A+Sg+Nom'),
+    'noun':
+    Classification(re.compile(r'^\+N\+(Sg|Pl|Attr|Ess|G3|G7|NomAg)'),
+                   '+N+Sg+Nom')
+}
 
 REMOVABLE_REGEX_TAGS = {
     'adjective_comp_superl': re.compile(r'\+A\+Der/(Comp|Superl)'),
@@ -73,40 +111,9 @@ class Lemmatiser:
     @staticmethod
     def classify(ending_tags):
         """Classify PoS according to ending_tags."""
-        containing_tags = {
-            'VABess': '+V+VABess',
-            '+Ger': '+V+Ger',
-            '+V+Actio': '+V+Actio+Nom',
-            '+V+VGen': '+V+VGen',
-            '+A+Ord': '+A+Ord+Sg+Nom',
-            '+N+Attr': '+N+Attr',
-            '+N+Prop': '+N+Prop+Sg+Nom',
-            '+N+Coll': '+N+Coll+Sg+Nom',
-            '+N+ABBR': '+N+ABBR+Sg+Nom',
-            '+N+NomAg': '+N+NomAg+Sg+Nom',
-            '+N+ACR': '+N+ACR+Sg+Nom',
-            '+Adv+ABBR': '+Adv+ABBR'
-        }
-
-        containing_tags.update(
-            {f'+Num+{tag}': '+Num+Sg+Nom'
-             for tag in ['Sg', 'Pl', 'Ess']})
-
-        for tags, classification in containing_tags.items():
-            if tags in ending_tags:
-                return classification
-
-        if ending_tags.endswith('+Adv'):
-            return '+Adv'
-
-        if VERB.match(ending_tags):
-            return '+V+Inf'
-
-        if ADJECTIVE.match(ending_tags):
-            return '+A+Sg+Nom'
-
-        if NOUN.match(ending_tags):
-            return '+N+Sg+Nom'
+        for tag in CLASSIFICATIONS.values():
+            if tag.regex.match(ending_tags):
+                return tag.classification
 
         return None
 
