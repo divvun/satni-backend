@@ -19,10 +19,10 @@ REMOVEABLE_REGEX_TAGS = {
 }
 
 REMOVEABLE_TAGS = {
-    'transitivity': ('+TV', ''),
-    'intransitivity': ('+IV', ''),
-    'qst': ('+Qst', ''),
-    'subqst': ('+Subqst', '')
+    'transitivity': '+TV',
+    'intransitivity': '+IV',
+    'qst': '+Qst',
+    'subqst': '+Subqst',
 }
 
 
@@ -54,8 +54,8 @@ class Lemmatiser:
         """Clean analysis for use in ending_tags."""
         for tagregex in REMOVEABLE_REGEX_TAGS.values():
             analysis = tagregex.sub('', analysis)
-        for tag, replacement in REMOVEABLE_TAGS.values():
-            analysis = analysis.replace(tag, replacement)
+        for tag in REMOVEABLE_TAGS.values():
+            analysis = analysis.replace(tag, '')
 
         return analysis
 
