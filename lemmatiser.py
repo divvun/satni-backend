@@ -10,7 +10,7 @@ ADJECTIVE = re.compile(r'^\+A\+(Sg|Pl|Attr|Ess)')
 NOUN = re.compile(r'^\+N\+(Sg|Pl|Attr|Ess|G3|G7|NomAg)')
 VERB = re.compile(r'^\+V\+(Inf|Ind|Imprt|Cond|Pot|PrfPrc|PrsPrc)')
 
-REMOVEABLE_REGEX_TAGS = {
+REMOVABLE_REGEX_TAGS = {
     'adjective_comp_superl': re.compile(r'\+A\+Der/(Comp|Superl)'),
     'semantic': re.compile(r'\+Sem/[^+]+'),
     'possesive_suffix': re.compile(r'\+Px.+$'),
@@ -18,7 +18,7 @@ REMOVEABLE_REGEX_TAGS = {
     'version': re.compile(r'\+v\d')
 }
 
-REMOVEABLE_TAGS = {
+REMOVABLE_TAGS = {
     'transitivity': '+TV',
     'intransitivity': '+IV',
     'qst': '+Qst',
@@ -52,9 +52,9 @@ class Lemmatiser:
     @staticmethod
     def clean_analysis(analysis):
         """Clean analysis for use in ending_tags."""
-        for tagregex in REMOVEABLE_REGEX_TAGS.values():
+        for tagregex in REMOVABLE_REGEX_TAGS.values():
             analysis = tagregex.sub('', analysis)
-        for tag in REMOVEABLE_TAGS.values():
+        for tag in REMOVABLE_TAGS.values():
             analysis = analysis.replace(tag, '')
 
         return analysis
@@ -135,7 +135,7 @@ class Lemmatiser:
             suff = analysis
 
         start = self.remove_last_tags(
-            REMOVEABLE_REGEX_TAGS['adjective_comp_superl'].sub('', suff))
+            REMOVABLE_REGEX_TAGS['adjective_comp_superl'].sub('', suff))
         ending_tags = self.ending_tags(self.clean_analysis(suff))
 
         if any(
