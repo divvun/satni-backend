@@ -26,7 +26,7 @@ REMOVEABLE_TAGS = {
 }
 
 
-class Lemmatiser(object):
+class Lemmatiser:
     """Given a wordform and a language, spit out possible wordforms."""
     def __init__(self, lang):
         """Initialise HFST analysers."""
