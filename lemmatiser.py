@@ -30,8 +30,6 @@ class Lemmatiser(object):
     """Given a wordform and a language, spit out possible wordforms."""
     def __init__(self, lang):
         """Initialise HFST analysers."""
-        self.analysers = {}
-        self.generators = {}
         path = Path('/usr/share/giella') / lang
         self.analyser = hfst.HfstInputStream(
             str(path / 'analyser-gt-desc.hfstol')).read()
