@@ -137,6 +137,13 @@ class SmeLemmatiser(Lemmatiser):
         tag = analysis.find('+')
         return analysis[:tag]
 
+    def analysis_to_wordforms(self, analysis):
+        """Given an analysis, generate a wordform."""
+        return [
+            ATTS.sub('', generated[0])
+            for generated in self.generator.lookup(analysis)
+        ]
+
     def generate(self, analysis):
         """Generate word forms from the ending_tags."""
         if analysis.startswith('ii+'):
@@ -164,8 +171,10 @@ class SmeLemmatiser(Lemmatiser):
         if classified_tags is None:
             raise ValueError(f'Can not handle: {analysis}')
 
-        return (ATTS.sub('', generated[0]) for generated in
-                self.generator.lookup(f'{cmp}{start}{classified_tags}'))
+        return [
+            f'{cmp}{generated}' for generated in self.analysis_to_wordforms(
+                f'{start}{classified_tags}')
+        ]
 
     def lemmatise(self, word):
         """Lemmatize word using a descriptive analyser."""
