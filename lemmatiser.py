@@ -92,8 +92,6 @@ class SmeLemmatiser(Lemmatiser):
     }
 
     removable_tags = {
-        'transitivity': '+TV',
-        'intransitivity': '+IV',
         'qst': '+Qst',
         'subqst': '+Subqst',
     }
