@@ -22,8 +22,8 @@ class TestSmeRegexes(unittest.TestCase):
         assert self.lemmatiser.classifications['noun'].regex.match(
             adjective_value) is not None
 
-    @params('+V+Ind', '+V+Imprt', '+V+Cond', '+V+Pot', '+V+PrfPrc', '+V+Inf',
-            '+V+PrsPrc')
+    @params('+V+IV+Ind', '+V+Imprt', '+V+TV+Cond', '+V+Pot', '+V+PrfPrc',
+            '+V+Inf', '+V+PrsPrc')
     def test_verb(self, verb_value):
         assert self.lemmatiser.classifications['verb'].regex.match(
             verb_value) is not None

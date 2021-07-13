@@ -49,9 +49,10 @@ class SmeLemmatiser(Lemmatiser):
         'verb_gerundium':
         Classification(re.compile(r'.*\+Ger.*'), '+V+Ger'),
         'verb_action_form':
-        Classification(re.compile(r'.*\+V\+Actio.*'), '+V+Actio+Nom'),
+        Classification(re.compile(r'.*\+V(\+(IV|TV))\+Actio.*'),
+                       '+V+Actio+Nom'),
         'verb_genitive':
-        Classification(re.compile(r'.*\+V\+VGen.*'), '+V+VGen'),
+        Classification(re.compile(r'.*\+V(\+(IV|TV))\+VGen.*'), '+V+VGen'),
         'adjective_ordinal_number':
         Classification(re.compile(r'.*\+A\+Ord.*'), '+A+Ord+Sg+Nom'),
         'attributive':
@@ -74,7 +75,8 @@ class SmeLemmatiser(Lemmatiser):
         Classification(re.compile(r'.*\+Adv$'), '+Adv'),
         'verb':
         Classification(
-            re.compile(r'^\+V\+(Inf|Ind|Imprt|Cond|Pot|PrfPrc|PrsPrc)'),
+            re.compile(
+                r'^\+V(\+(IV|TV))*\+(Inf|Ind|Imprt|Cond|Pot|PrfPrc|PrsPrc)'),
             '+V+Inf'),
         'adjective':
         Classification(re.compile(r'^\+A\+(Sg|Pl|Attr|Ess)'), '+A+Sg+Nom'),
