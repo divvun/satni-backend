@@ -144,6 +144,19 @@ class SmeLemmatiser(Lemmatiser):
             for generated in self.generator.lookup(analysis)
         ]
 
+    def generate_compounds(self, compounds):
+        """Generate wordforms for compound parts of words."""
+        end = {
+            ending: f'+{ending[-5:-3]}+{ending[-3:]}'
+            for ending in ['+Cmp/SgNom', '+Cmp/SgGen', '+Cmp/PlGen']
+        }
+
+        return '|'.join([
+            self.analysis_to_wordforms(
+                f'{compound[:-10]}{end[compound[-10:]]}')[0]
+            for compound in compounds
+        ]) + '|'
+
     def generate(self, analysis):
         """Generate word forms from the ending_tags."""
         if analysis.startswith('ii+'):
@@ -151,7 +164,7 @@ class SmeLemmatiser(Lemmatiser):
 
         if '+Cmp#' in analysis:
             parts = analysis.rsplit('+Cmp#', maxsplit=1)
-            cmp = f'{parts[0]}+Cmp#'
+            cmp = self.generate_compounds(parts[0].split('+Cmp#'))
             suff = parts[1]
         else:
             cmp = ''

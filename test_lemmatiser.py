@@ -40,21 +40,21 @@ class TestLemmatiser(unittest.TestCase):
         self.lemmatisers = {}
         self.lemmatisers['sme'] = lemmatiser.lemmatiser('sme')
 
-    @params(('sme', 'vuolgin', ['vuolgi', 'vuolgin']),
-            ('sme', 'vuolgimat', ['vuolgit', 'vuolgi', 'vuolgin']),
-            ('sme', 'biillat', ['biila']),
-            ('sme', 'biiladoaibmandiliide', ['biiladoaibmandilli']),
-            ('sme', 'Åsai', ['Åsa']), ('sme', 'Ø:i', ['Ø.', 'ø', 'ø.']),
-            ('sme', 'www:s', ['www']),
-            ('sme', 'vuovdit', ['vuovdi', 'vuovdit']),
-            ('sme', 'vuorrasit', ['vuoras', 'vuorrasit']),
-            ('sme', 'jearahalliguoktái',
-             ['jearahalliguoktá', 'jearahalliguovttes', 'jearahalliguovttis']),
-            ('sme', 'vuostái', ['vuosti', 'vuostá', 'vuostái']),
-            ('sme', 'vuoi', ['vuoi', 'vai']), ('sme', 'vai', ['vai']),
-            ('sme', 'vaikko', ['vaikke', 'vaikko', 'váikke', 'váikko']),
-            ('sme', 'nu', ['nu']), ('sme', 'omd.', ['omd.']),
-            ('sme', 'viđaid', ['vihtta']), ('sme', 'iige', ['ii']))
+    @params(
+        ('sme', 'vuolgin', ['vuolgi', 'vuolgin']),
+        ('sme', 'vuolgimat', ['vuolgit', 'vuolgi', 'vuolgin']),
+        ('sme', 'biillat', ['biila']), ('sme', 'biiladoaibmandiliide', [
+            'biila|doaibman|dilli', 'biila|doaibmandilli'
+        ]), ('sme', 'Åsai', ['Åsa']), ('sme', 'Ø:i', ['Ø.', 'ø', 'ø.']),
+        ('sme', 'www:s', ['www']), ('sme', 'vuovdit', ['vuovdi', 'vuovdit']),
+        ('sme', 'vuorrasit', ['vuoras', 'vuorrasit']),
+        ('sme', 'jearahalliguoktái',
+         ['jearahalli|guoktá', 'jearahalli|guovttes', 'jearahalli|guovttis']),
+        ('sme', 'vuostái', ['vuosti', 'vuostá', 'vuostái']),
+        ('sme', 'vuoi', ['vuoi', 'vai']), ('sme', 'vai', ['vai']),
+        ('sme', 'vaikko', ['vaikke', 'vaikko', 'váikke', 'váikko']),
+        ('sme', 'nu', ['nu']), ('sme', 'omd.', ['omd.']),
+        ('sme', 'viđaid', ['vihtta']), ('sme', 'iige', ['ii']))
     def test_lemmatiser(self, language, word, exptected_results):
         """Test that the lemmatiser return expected values."""
         assert self.lemmatisers[language].lemmatise(word) == sorted(
