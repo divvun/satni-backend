@@ -6,10 +6,9 @@ import lemmatiser
 
 
 class TestSmeRegexes(unittest.TestCase):
+    """Check that the regexes matches what they are supposed to."""
     def setUp(self):
         self.lemmatiser = lemmatiser.lemmatiser('sme')
-
-    """Check that the regexes matches what they are supposed to."""
 
     @params('+A+Sg+Nom', '+A+Pl+Nom', '+A+Attr', '+A+Ess')
     def test_adjective(self, adjective_value):
