@@ -130,6 +130,24 @@ curl https://satni.uit.no/newsatni/ \
 --data-binary '@hasStem.json'
 ```
 
+## lemmatised
+
+Used to analyse wordforms sent to the lemmatiser.
+
+The lemmatiser returns a list containing info about the language of the lemmatiser, a list of lemmatised wordforms and a list of analyses of the queried wordform.
+
+The list of lemmatised wordforms can be used to query the dictionaries, the analyses can be used to explain the different analyses of the given wordform.
+
+To see and example of the results of this query, download [lemmatised.json](lemmatised.json) and run the command:
+
+```bash
+curl https://satni.uit.no/newsatni/ \
+-H 'Content-Type: application/json' \
+-H 'Accept: application/json' \
+--compressed \
+--data-binary '@lemmatised.json'
+```
+
 ## Find all capabilities
 
 To get a complete overview what this backend offers, download [all.json](all.json) and do the command:

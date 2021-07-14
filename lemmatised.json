@@ -1,0 +1,7 @@
+{
+    "operationName": "Lemmatised",
+    "variables": {
+        "lookupString": "biiladoaibmandiliide"
+    },
+    "query": "query Lemmatised($lookupString: String!) { lemmatised(lookupString: $lookupString) { language wordforms analyses } }"
+}
