@@ -1,3 +1,4 @@
+"""Setup a schema to get results from the lemmatiser."""
 from pathlib import Path
 
 import graphene
@@ -12,10 +13,12 @@ LEMMATISERS = {
 
 
 class Query(graphene.ObjectType):
+    """Query class for lemmatiser."""
     lemmatised = graphene.List(LemmatiserResultType,
                                lookup_string=graphene.String())
 
     def resolve_lemmatised(self, info, lookup_string=None, **kwargs):
+        """Lemmatise lookup_string."""
         return [{
             'language':
             lang,
