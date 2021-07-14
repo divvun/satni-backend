@@ -2,20 +2,29 @@ from pathlib import Path
 
 import graphene
 
-from .lemmatiser import Lemmatiser
+from .lemmatiser import lemmatiser
+from .types import LemmatiserResultType
 
 LEMMATISERS = {
-    path.name: Lemmatiser(path / 'analyser-gt-desc.hfstol')
+    path.name: lemmatiser(path.name)
     for path in Path('/usr/share/giella/').glob('???')
 }
 
 
 class Query(graphene.ObjectType):
-    lemmas = graphene.List(graphene.String, lookup_string=graphene.String())
+    lemmas = graphene.List(LemmatiserResultType,
+                           lookup_string=graphene.String())
 
     def resolve_lemmas(self, info, lookup_string=None, **kwargs):
-        return sorted(
-            set([
-                lemma for lang, lemmatiser in LEMMATISERS.items()
-                for lemma in lemmatiser.lemmatise(lookup_string)
-            ]))
+        return [{
+            'language':
+            lang,
+            'wordforms': [
+                wordform
+                for wordform in LEMMATISERS[lang].lemmatise(lookup_string)
+            ],
+            'analyses': [
+                analysis
+                for analysis in LEMMATISERS[lang].analyse(lookup_string)
+            ]
+        } for lang in LEMMATISERS]
