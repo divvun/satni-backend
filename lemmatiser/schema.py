@@ -12,10 +12,10 @@ LEMMATISERS = {
 
 
 class Query(graphene.ObjectType):
-    lemmas = graphene.List(LemmatiserResultType,
-                           lookup_string=graphene.String())
+    lemmatised = graphene.List(LemmatiserResultType,
+                               lookup_string=graphene.String())
 
-    def resolve_lemmas(self, info, lookup_string=None, **kwargs):
+    def resolve_lemmatised(self, info, lookup_string=None, **kwargs):
         return [{
             'language':
             lang,
