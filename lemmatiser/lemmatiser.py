@@ -9,6 +9,7 @@ import hfst
 ATTS = re.compile(r'@[^@]+@')
 
 Classification = namedtuple('Classification', 'regex classification')
+Analysis = namedtuple('Analysis', 'analysis weight')
 
 
 class Lemmatiser:
@@ -30,15 +31,16 @@ class Lemmatiser:
         Returns:
             list: a list of hfst analyses
         """
-        return (ATTS.sub('', analysis[0])
+        return (Analysis(ATTS.sub('', analysis[0]), analysis[1])
                 for analysis in self.analyser.lookup(word)
                 if '?' not in analysis[0] and '+Err' not in analysis[0])
 
     def lemmatise(self, word):
         """Lemmatize word using a descriptive analyser."""
-        return sorted(
-            {analysis.split('+')[0]
-             for analysis in self.analyse(word)})
+        return sorted({
+            analysis.analysis.split('+')[0]
+            for analysis in self.analyse(word)
+        })
 
 
 class SmeLemmatiser(Lemmatiser):
@@ -194,7 +196,7 @@ class SmeLemmatiser(Lemmatiser):
         return sorted({
             generated
             for analysis in self.analyse(word)
-            for generated in self.generate(analysis)
+            for generated in self.generate(analysis.analysis)
         })
 
 
