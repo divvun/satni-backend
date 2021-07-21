@@ -17,7 +17,7 @@ class Query(graphene.ObjectType):
     lemmatised = graphene.List(LemmatiserResultType,
                                lookup_string=graphene.String())
 
-    def resolve_lemmatised(self, info, lookup_string=None, **kwargs):
+    def resolve_lemmatised(self, info, lookup_string=None):
         """Lemmatise lookup_string."""
         return [{
             'language':

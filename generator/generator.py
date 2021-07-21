@@ -10,15 +10,13 @@ ATTS = re.compile(r"@[^@]+@")
 
 class ParadigmGenerator(object):
     """Generate paradigms using hfst."""
-
     def __init__(self, lang):
         """Initialise HFST analysers."""
         path = Path("/usr/share/giella") / lang / "generator-gt-norm.hfstol"
         self.generator = hfst.HfstInputStream(str(path)).read()
         self.lang = lang
-        self.lang_template_dir = (
-            Path(os.getenv("GTLANGS")) / f"lang-{self.lang}/test/data"
-        )
+        self.lang_template_dir = (Path(os.getenv("GTLANGS")) /
+                                  f"lang-{self.lang}/test/data")
         self.paradigm_templates = self.generate_taglist()
 
     def generate_taglist(self):
@@ -60,36 +58,39 @@ class ParadigmGenerator(object):
 
             class_ = class_.replace("?", "")
             if not tag_dict.get(class_):
-                self.generate_tag(f"{tag}+{class_}", tag_dict, new_class, taglist)
+                self.generate_tag(f"{tag}+{class_}", tag_dict, new_class,
+                                  taglist)
             else:
                 for t in tag_dict[class_]:
-                    self.generate_tag(f"{tag}+{t}", tag_dict, new_class, taglist)
+                    self.generate_tag(f"{tag}+{t}", tag_dict, new_class,
+                                      taglist)
 
     def make_grammar(self):
         """Make the grammar list."""
-        filename = (
-            f"paradigm_full.{self.lang}.txt"
-            if self.lang != "smj"
-            else f"paradigm_standard.{self.lang}.txt"
-        )
+        filename = (f"paradigm_full.{self.lang}.txt" if self.lang != "smj" else
+                    f"paradigm_standard.{self.lang}.txt")
         gramfile = self.lang_template_dir / filename
         with gramfile.open() as gramfile_stream:
             return [line for line in self.valid_tag_lines(gramfile_stream)]
 
     def generate(self, word, paradigm):
         """Generate a paradigm."""
-        return (
-            ATTS.sub("", analysis[0])
-            for analysis in self.generator.lookup(f"{word}+{paradigm}")
-            if "?" not in analysis[0] and "+Err" not in analysis[0]
-        )
+        return (ATTS.sub("", analysis[0])
+                for analysis in self.generator.lookup(f"{word}+{paradigm}")
+                if "?" not in analysis[0] and "+Err" not in analysis[0])
 
     def generate_wordforms(self, word, pos):
+        for paradigm_template in self.paradigm_templates[pos]:
+            generated_wordforms = list(self.generate(word, paradigm_template))
+            if generated_wordforms:
+                yield paradigm_template, generated_wordforms
+
+    def example_generate_wordforms(self, word, pos):
         """Given a word and pos, generate a paradigm."""
         print(word, pos)
 
-        for i, paradigm_template in enumerate(self.paradigm_templates[pos]):
-            generated_wordforms = list(self.generate(word, paradigm_template))
+        for i, result in enumerate(self.generate_wordforms(word, pos)):
+            paradigm_template, generated_wordforms = result
             if generated_wordforms:
                 print(
                     i,
@@ -117,15 +118,13 @@ class ParadigmGenerator(object):
     @staticmethod
     def is_valid_tagline(tagline):
         """Check if tagline is something useful."""
-        return not (tagline.strip() == "" or tagline.startswith("%") or "=" in tagline)
+        return not (tagline.strip() == "" or tagline.startswith("%")
+                    or "=" in tagline)
 
     def valid_tag_lines(self, tagfile_stream):
         """Return only useful lines."""
-        return (
-            tagline.strip()
-            for tagline in tagfile_stream
-            if self.is_valid_tagline(tagline)
-        )
+        return (tagline.strip() for tagline in tagfile_stream
+                if self.is_valid_tagline(tagline))
 
 
 def main():
@@ -141,10 +140,19 @@ def main():
                 "eadni",
             ]
         },
-        "smj": {"N": ["A-vitamijnna", "biebbmobárnne", "loahkka", "addnejuogos"]},
-        "fin": {"N": ["4H-kerholainen", "aakkosto"]},
-        "smn": {"N": ["akselkoskâ", "eeči", "ovdâjuurdâ", "aalmuglâšeepos"]},
-        "sms": {"N": ["kåʹšǩǩjueʹljest", "jueʹlǧǧ"], "V": ["ruppõõvvâd"]},
+        "smj": {
+            "N": ["A-vitamijnna", "biebbmobárnne", "loahkka", "addnejuogos"]
+        },
+        "fin": {
+            "N": ["4H-kerholainen", "aakkosto"]
+        },
+        "smn": {
+            "N": ["akselkoskâ", "eeči", "ovdâjuurdâ", "aalmuglâšeepos"]
+        },
+        "sms": {
+            "N": ["kåʹšǩǩjueʹljest", "jueʹlǧǧ"],
+            "V": ["ruppõõvvâd"]
+        },
         "sma": {
             "A": ["raejnies", "tjïelke"],
             "N": [
@@ -159,10 +167,10 @@ def main():
         },
     }
     for lang, pos_dict in examples.items():
-        lemmatiser = ParadigmGenerator(lang)
+        generator = ParadigmGenerator(lang)
         for pos, stems in pos_dict.items():
             for stem in stems:
-                lemmatiser.generate_wordforms(stem, pos)
+                generator.example_generate_wordforms(stem, pos)
 
 
 if __name__ == "__main__":

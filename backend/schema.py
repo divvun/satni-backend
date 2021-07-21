@@ -1,14 +1,14 @@
 import graphene
 
 import dicts.schema
-import lemmas.schema
+import generator.schema
+import lemmatiser.schema
 import stems.schema
 import terms.schema
-import lemmatiser.schema
 
 
-class Query(stems.schema.Query, dicts.schema.Query, lemmatiser.schema.Query, terms.schema.Query,
-            graphene.ObjectType):
+class Query(stems.schema.Query, dicts.schema.Query, lemmatiser.schema.Query,
+            terms.schema.Query, generator.schema.Query, graphene.ObjectType):
     pass
 
 
