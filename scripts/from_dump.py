@@ -328,8 +328,8 @@ def make_stems():
 
 
 def run():
-    invalids = [invalid for invalid in invalid_dicts()]
-    if invalids:
+    invalids = invalid_dicts()
+    if list(invalids):
         raise SystemExit('Invalid dicts, stopping import:\n{}'.format(
             '\n'.join(invalids)))
     import_sammalahti()
