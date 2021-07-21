@@ -10,11 +10,13 @@ ATTS = re.compile(r"@[^@]+@")
 
 class TaglistGenerator:
     """Generate tags dictionaries."""
+
     def __init__(self, lang):
         """Init the class."""
         self.lang = lang
-        self.lang_template_dir = (Path(os.getenv("GTLANGS")) /
-                                  f"lang-{self.lang}/test/data")
+        self.lang_template_dir = (
+            Path(os.getenv("GTLANGS")) / f"lang-{self.lang}/test/data"
+        )
 
     def generate_taglist(self):
         """Read the grammar for paradigm tag list.
@@ -34,7 +36,7 @@ class TaglistGenerator:
 
             paradigm_templates[pos].extend(taglist)
 
-        with open(f'generator/data/{self.lang}.json', 'w') as tag_stream:
+        with open(f"generator/data/{self.lang}.json", "w") as tag_stream:
             json.dump(paradigm_templates, tag_stream, indent=2)
 
     def generate_tag(self, tag, tag_dict, classes, taglist):
@@ -56,17 +58,18 @@ class TaglistGenerator:
 
             class_ = class_.replace("?", "")
             if not tag_dict.get(class_):
-                self.generate_tag(f"{tag}+{class_}", tag_dict, new_class,
-                                  taglist)
+                self.generate_tag(f"{tag}+{class_}", tag_dict, new_class, taglist)
             else:
                 for t in tag_dict[class_]:
-                    self.generate_tag(f"{tag}+{t}", tag_dict, new_class,
-                                      taglist)
+                    self.generate_tag(f"{tag}+{t}", tag_dict, new_class, taglist)
 
     def make_grammar(self):
         """Make the grammar list."""
-        filename = (f"paradigm_full.{self.lang}.txt" if self.lang != "smj" else
-                    f"paradigm_standard.{self.lang}.txt")
+        filename = (
+            f"paradigm_full.{self.lang}.txt"
+            if self.lang != "smj"
+            else f"paradigm_standard.{self.lang}.txt"
+        )
         gramfile = self.lang_template_dir / filename
         with gramfile.open() as gramfile_stream:
             return [line for line in self.valid_tag_lines(gramfile_stream)]
@@ -90,16 +93,18 @@ class TaglistGenerator:
     @staticmethod
     def is_valid_tagline(tagline):
         """Check if tagline is something useful."""
-        return not (tagline.strip() == "" or tagline.startswith("%")
-                    or "=" in tagline)
+        return not (tagline.strip() == "" or tagline.startswith("%") or "=" in tagline)
 
     def valid_tag_lines(self, tagfile_stream):
         """Return only useful lines."""
-        return (tagline.strip() for tagline in tagfile_stream
-                if self.is_valid_tagline(tagline))
+        return (
+            tagline.strip()
+            for tagline in tagfile_stream
+            if self.is_valid_tagline(tagline)
+        )
 
 
 def run():
-    for language in ['fin', 'sma', 'sme', 'smj', 'smn', 'sms']:
+    for language in ["fin", "sma", "sme", "smj", "smn", "sms"]:
         generator = TaglistGenerator(language)
         generator.generate_taglist()

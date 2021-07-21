@@ -10,6 +10,7 @@ ATTS = re.compile(r"@[^@]+@")
 
 class ParadigmGenerator:
     """Generate paradigms using hfst."""
+
     def __init__(self, lang):
         """Initialise HFST analysers."""
         path = Path("/usr/share/giella") / lang / "generator-gt-norm.hfstol"
@@ -19,14 +20,16 @@ class ParadigmGenerator:
 
     def read_taglist(self):
         """Read paradigm generation templates."""
-        with open(f'generator/data/{self.lang}.json') as json_stream:
+        with open(f"generator/data/{self.lang}.json") as json_stream:
             return json.load(json_stream)
 
     def generate(self, word, paradigm_template):
         """Generate a paradigm."""
-        return (ATTS.sub("", analysis[0]) for analysis in
-                self.generator.lookup(f"{word}+{paradigm_template}")
-                if "?" not in analysis[0] and "+Err" not in analysis[0])
+        return (
+            ATTS.sub("", analysis[0])
+            for analysis in self.generator.lookup(f"{word}+{paradigm_template}")
+            if "?" not in analysis[0] and "+Err" not in analysis[0]
+        )
 
     def generate_wordforms(self, word, pos):
         """Given a word and pos, generate a paradigm."""
@@ -64,19 +67,10 @@ def main():
                 "eadni",
             ]
         },
-        "smj": {
-            "N": ["A-vitamijnna", "biebbmobárnne", "loahkka", "addnejuogos"]
-        },
-        "fin": {
-            "N": ["4H-kerholainen", "aakkosto"]
-        },
-        "smn": {
-            "N": ["akselkoskâ", "eeči", "ovdâjuurdâ", "aalmuglâšeepos"]
-        },
-        "sms": {
-            "N": ["kåʹšǩǩjueʹljest", "jueʹlǧǧ"],
-            "V": ["ruppõõvvâd"]
-        },
+        "smj": {"N": ["A-vitamijnna", "biebbmobárnne", "loahkka", "addnejuogos"]},
+        "fin": {"N": ["4H-kerholainen", "aakkosto"]},
+        "smn": {"N": ["akselkoskâ", "eeči", "ovdâjuurdâ", "aalmuglâšeepos"]},
+        "sms": {"N": ["kåʹšǩǩjueʹljest", "jueʹlǧǧ"], "V": ["ruppõõvvâd"]},
         "sma": {
             "A": ["raejnies", "tjïelke"],
             "N": [

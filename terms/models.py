@@ -1,6 +1,12 @@
 from mongoengine import Document, EmbeddedDocument
-from mongoengine.fields import (BooleanField, EmbeddedDocumentField, ListField,
-                                ObjectIdField, ReferenceField, StringField)
+from mongoengine.fields import (
+    BooleanField,
+    EmbeddedDocumentField,
+    ListField,
+    ObjectIdField,
+    ReferenceField,
+    StringField,
+)
 
 from lemmas.models import Lemma
 
@@ -14,7 +20,7 @@ class Term(EmbeddedDocument):
 
 
 class Concept(Document):
-    meta = {'collection': 'terms'}
+    meta = {"collection": "terms"}
     dictName = StringField()
     name = StringField()
     language = StringField()
@@ -24,4 +30,4 @@ class Concept(Document):
     collections = ListField(StringField())
 
     def __str__(self):
-        return '%s: %s' % (self.name, self.language)
+        return "%s: %s" % (self.name, self.language)

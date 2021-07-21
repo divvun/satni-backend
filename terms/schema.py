@@ -20,11 +20,13 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_concept_list(self, info, exact, **kwargs):
-        src_langs = kwargs['src_langs']
-        target_langs = kwargs['target_langs']
+        src_langs = kwargs["src_langs"]
+        target_langs = kwargs["target_langs"]
         names = [
-            concept.name for concept in Concept.objects(
-                terms__expression__in=Lemma.objects(lemma=exact))
+            concept.name
+            for concept in Concept.objects(
+                terms__expression__in=Lemma.objects(lemma=exact)
+            )
         ]
 
         if not names:
@@ -42,7 +44,8 @@ class Query(graphene.ObjectType):
 
         named = Concept.objects(name_filter)
         wanted_by_lang = [
-            name for name in named
+            name
+            for name in named
             if name.terms[0].expression.language in src_langs
             or name.terms[0].expression.language in target_langs
         ]

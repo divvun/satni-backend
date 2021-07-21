@@ -3,8 +3,7 @@ import graphene
 from graphene_mongo.fields import MongoengineConnectionField
 
 from .models import Lemma
-from .mutations import (CreateLemmaMutation, DeleteLemmaMutation,
-                        UpdateLemmaMutation)
+from .mutations import CreateLemmaMutation, DeleteLemmaMutation, UpdateLemmaMutation
 from .types import LemmaType
 
 # class Query(graphene.ObjectType):

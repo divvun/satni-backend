@@ -1,6 +1,12 @@
 from mongoengine import Document, EmbeddedDocument
-from mongoengine.fields import (BooleanField, EmbeddedDocumentField, ListField,
-                                ObjectIdField, ReferenceField, StringField)
+from mongoengine.fields import (
+    BooleanField,
+    EmbeddedDocumentField,
+    ListField,
+    ObjectIdField,
+    ReferenceField,
+    StringField,
+)
 
 from lemmas.models import Lemma
 
@@ -22,7 +28,7 @@ class TranslationGroup(EmbeddedDocument):
 
 
 class DictEntry(Document):
-    meta = {'collection': 'dicts'}
+    meta = {"collection": "dicts"}
     dictName = StringField()
     srcLang = StringField()
     targetLang = StringField()

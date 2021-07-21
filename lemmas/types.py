@@ -8,4 +8,4 @@ from .models import Lemma
 class LemmaType(MongoengineObjectType):
     class Meta:
         model = Lemma
-        interfaces = (relay.Node, )
+        interfaces = (relay.Node,)

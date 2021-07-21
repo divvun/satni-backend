@@ -17,5 +17,5 @@ class Connection(graphene.Connection):
 class StemType(MongoengineObjectType):
     class Meta:
         model = Stem
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)
         connection_class = Connection

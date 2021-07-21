@@ -6,12 +6,18 @@ import sys
 import lemmatiser
 
 lemmat = lemmatiser.Lemmatiser(sys.argv[1])
-with open(f'{sys.argv[1]}.txt') as fp:
+with open(f"{sys.argv[1]}.txt") as fp:
     for x, line in enumerate(fp):
-        if '?' not in line and '+Err/' not in line \
-            and '+Cmp/SplitR' not in line and '+PUNCT' not in line \
-                and '+CLB' not in line and '+Arab' not in line \
-                    and '+Symbol' not in line and '+Num+Rom' not in line:
+        if (
+            "?" not in line
+            and "+Err/" not in line
+            and "+Cmp/SplitR" not in line
+            and "+PUNCT" not in line
+            and "+CLB" not in line
+            and "+Arab" not in line
+            and "+Symbol" not in line
+            and "+Num+Rom" not in line
+        ):
             parts = line.split()
             if len(parts) == 3:
                 try:
