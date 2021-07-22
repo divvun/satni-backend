@@ -23,8 +23,14 @@ class Query(graphene.ObjectType):
     def resolve_generated(self, info, origform, language, partOfSpeech):
         """Generate wordforms."""
         return [
-            {"paradigm_template": paradigm_template, "wordforms": wordforms}
-            for paradigm_template, wordforms in GENERATORS[language].generate_wordforms(
+            {
+                "paradigm_template": paradigm_template,
+                "analyses": [
+                    {"wordform": analysis.wordform, "weight": analysis.weight}
+                    for analysis in analyses
+                ],
+            }
+            for paradigm_template, analyses in GENERATORS[language].generate_wordforms(
                 origform, partOfSpeech
             )
         ]

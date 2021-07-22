@@ -7,7 +7,7 @@ from pathlib import Path
 import hfst
 
 ATTS = re.compile(r"@[^@]+@")
-Analysis = namedtuple("Analysis", "analysis weight")
+Analysis = namedtuple("Analysis", "wordform weight")
 
 
 class ParadigmGenerator:
@@ -49,7 +49,10 @@ class ParadigmGenerator:
             if generated_wordforms:
                 print(
                     i,
-                    generated_wordforms,
+                    [
+                        generated_wordform.wordform
+                        for generated_wordform in generated_wordforms
+                    ],
                     paradigm_template,
                     len(self.paradigm_templates[pos]),
                 )
