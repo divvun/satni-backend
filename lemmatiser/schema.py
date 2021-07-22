@@ -25,7 +25,8 @@ class Query(graphene.ObjectType):
                     wordform for wordform in LEMMATISERS[lang].lemmatise(lookup_string)
                 ],
                 "analyses": [
-                    analysis for analysis in LEMMATISERS[lang].analyse(lookup_string)
+                    {"analysis": analysis.analysis, "weight": analysis.weight}
+                    for analysis in LEMMATISERS[lang].analyse(lookup_string)
                 ],
             }
             for lang in LEMMATISERS
