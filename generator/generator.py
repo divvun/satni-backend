@@ -1,11 +1,13 @@
 """Paradigm generator engine."""
 import json
 import re
+from collections import namedtuple
 from pathlib import Path
 
 import hfst
 
 ATTS = re.compile(r"@[^@]+@")
+Analysis = namedtuple("Analysis", "analysis weight")
 
 
 class ParadigmGenerator:
@@ -26,7 +28,7 @@ class ParadigmGenerator:
     def generate(self, word, paradigm_template):
         """Generate a paradigm."""
         return (
-            ATTS.sub("", analysis[0])
+            Analysis(ATTS.sub("", analysis[0]), analysis[1])
             for analysis in self.generator.lookup(f"{word}+{paradigm_template}")
             if "?" not in analysis[0] and "+Err" not in analysis[0]
         )
