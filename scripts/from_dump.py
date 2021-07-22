@@ -44,6 +44,11 @@ DICTS = [
     "finsmn",
     "smnfin",
     "finnob",
+    # uncomment these to do generation coverage
+    # "smesmj",
+    # "smjnob",
+    # "smjsme",
+    # "sms2X",
 ]
 
 
