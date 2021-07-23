@@ -1,8 +1,9 @@
+"""Test the lemmatiser engine."""
 import unittest
 
 from nose2.tools import params
 
-import lemmatiser
+from lemmatiser import lemmatiser
 
 
 class TestSmeRegexes(unittest.TestCase):
