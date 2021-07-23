@@ -12,37 +12,41 @@ from .from_dump import dict_paths, parse_xmlfile
 Lemma = namedtuple("Lemma", "lemma pos")
 
 
-def valid_lemmas(langs):
-    name_lemmasest = defaultdict(set)
-
+def valid_dictxmls():
+    """Only wanted dict files."""
+    langs = ["fin", "sma", "sme", "smj", "smn", "sms"]
     dictxmls = (parse_xmlfile(xml_file) for xml_file in dict_paths())
-
     for dictxml in dictxmls:
-        pair = dictxml.getroot().get("id")
-        lang = pair[:3]
+        lang = dictxml.getroot().get("id")[:3]
         if lang in langs:
             with open(f"generator/data/{lang}.json") as json_stream:
-                poses = json.load(json_stream).keys()
-                for lemma_element in dictxml.iter("l"):
-                    pos = lemma_element.get("pos").strip()
-                    if pos == "Prop":
-                        pos = "N"
-                    if lemma_element.text and pos in poses:
-                        name_lemmasest[lang].add(Lemma(lemma_element.text.strip(), pos))
+                yield lang, json.load(json_stream).keys(), dictxml
+
+
+def valid_lemmas():
+    """Only lemmas that are generatable according the lang.json files."""
+    name_lemmasest = defaultdict(set)
+
+    for lang, poses, dictxml in valid_dictxmls():
+        for lemma, pos in [
+            (lemma_element.text, lemma_element.get("pos").strip())
+            for lemma_element in dictxml.iter("l")
+        ]:
+            pos = "N" if pos == "Prop" else pos
+            if lemma and pos in poses:
+                name_lemmasest[lang].add(Lemma(lemma.strip(), pos))
 
     return name_lemmasest
 
 
 def run():
-    langs = ["fin", "sma", "sme", "smj", "smn", "sms"]
-    lemmatisers = {lang: Lemmatiser(lang) for lang in langs}
-    generators = {lang: ParadigmGenerator(lang) for lang in langs}
-    lemmas = valid_lemmas(langs)
+    """Check if lemmas from dicts are generateble."""
+    lemmas = valid_lemmas()
 
+    counter = Counter()
     for lang in sorted(lemmas):
-        counter = Counter()
-        current_analyser = lemmatisers.get(lang)
-        current_generator = generators.get(lang)
+        current_analyser = Lemmatiser(lang)
+        current_generator = ParadigmGenerator(lang)
         for lemma in lemmas[lang]:
             counter[lang] += 1
             # if not counter[lang] % 1000:
