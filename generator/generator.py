@@ -64,27 +64,45 @@ class ParadigmGenerator:
             if generated_wordforms:
                 yield paradigm_template, generated_wordforms
 
-    def find_best_analysis(self, word, pos):
-        """Given a word and a part of speech, find the best analysis of it."""
+    @staticmethod
+    def get_no_compounds(analyses):
+        """Remove analyses containing compound forms."""
+        return [analysis for analysis in analyses if "+Cmp#" not in analysis.wordform]
 
-        no_compounds = [
+    def get_with_best_analysis(self, analyses, pos):
+        """Remove analyses without the best analysis."""
+        return [
             analysis
-            for analysis in self.analyse(word)
-            if "+Cmp#" not in analysis.wordform
+            for analysis in analyses
+            if analysis.wordform.endswith(self.best_analysis[pos])
         ]
 
+    @staticmethod
+    def get_shortest_compound(analyses):
+        """Find the shortest analysis."""
+        shortest_analysis, *further_analysis = analyses
+
+        for analysis in further_analysis:
+            if len(analysis.wordform.split("+Cmp#")) < len(
+                shortest_analysis.wordform.split("+Cmp#")
+            ):
+                shortest_analysis = analysis
+
+        return shortest_analysis
+
+    def find_best_analysis(self, word, pos):
+        """Given a word and a part of speech, find the best analysis of it."""
+        with_best_analysis = self.get_with_best_analysis(self.analyse(word), pos)
+        no_compounds = self.get_no_compounds(with_best_analysis)
+
         if no_compounds:
-            with_best_analysis = [
-                no_compound
-                for no_compound in no_compounds
-                if no_compound.wordform.endswith(self.best_analysis[pos])
-            ]
-            if len(with_best_analysis) == 1:
-                result = with_best_analysis[0].wordform.replace(
-                    self.best_analysis[pos], ""
-                )
-                # print(result)
+            if len(no_compounds) == 1:
+                result = no_compounds[0].wordform.replace(self.best_analysis[pos], "")
                 return result
+        else:
+            shortest_compound = self.get_shortest_compound(with_best_analysis)
+            result = shortest_compound.wordform.replace(self.best_analysis[pos], "")
+            return result
 
         return ""
 
