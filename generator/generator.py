@@ -13,7 +13,7 @@ Analysis = namedtuple("Analysis", "wordform weight")
 class ParadigmGenerator:
     """Generate paradigms using hfst."""
 
-    removable_tags = re.compile(r"\+Sem/[^+]+")
+    removable_tags = re.compile(r"\+(IV|TV|Sem/[^+]+)")
 
     def __init__(self, lang):
         """Initialise HFST analysers."""
