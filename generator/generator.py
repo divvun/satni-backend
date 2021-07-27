@@ -13,7 +13,7 @@ Analysis = namedtuple("Analysis", "wordform weight")
 class ParadigmGenerator:
     """Generate paradigms using hfst."""
 
-    best_analysis = {"N": "+N+Sg+Nom"}
+    removable_tags = re.compile(r"\+Sem/[^+]+")
 
     def __init__(self, lang):
         """Initialise HFST analysers."""
@@ -24,6 +24,12 @@ class ParadigmGenerator:
         self.generator = hfst.HfstInputStream(str(generator_path)).read()
         self.lang = lang
         self.paradigm_templates = self.read_taglist()
+        self.best_analyses = {
+            "N": [
+                f"+{paradigm_template}"
+                for paradigm_template in self.paradigm_templates["N"]
+            ],
+        }
 
     def read_taglist(self):
         """Read paradigm generation templates."""
@@ -41,17 +47,12 @@ class ParadigmGenerator:
     def analyse(self, word):
         """Analyse the given wordform."""
         return (
-            Analysis(ATTS.sub("", analysis[0]), analysis[1])
+            Analysis(
+                self.removable_tags.sub("", ATTS.sub("", analysis[0])), analysis[1]
+            )
             for analysis in self.analyser.lookup(word)
             if "?" not in analysis[0] and "+Err" not in analysis[0]
         )
-
-    def make_generatable_word(self, word, pos):
-        """Return a generatable word."""
-        if list(self.generate(word, self.best_analysis[pos][1:])):
-            return word
-
-        return self.find_best_analysis(word, pos)
 
     def generate_and_check(self, word, pos):
         wordforms = list(self.generate_wordforms(word, pos))
@@ -59,8 +60,8 @@ class ParadigmGenerator:
         if wordforms:
             return wordforms
 
-        if pos in self.best_analysis.keys():
-            generatable_word = self.make_generatable_word(word, pos)
+        if pos in self.best_analyses.keys():
+            generatable_word = self.find_best_analysis(word, pos)
             return list(self.generate_wordforms(generatable_word, pos))
 
         return []
@@ -80,9 +81,10 @@ class ParadigmGenerator:
     def get_with_best_analysis(self, analyses, pos):
         """Remove analyses without the best analysis."""
         return [
-            analysis
+            Analysis(analysis.wordform.replace(best_analysis, ""), analysis.weight)
             for analysis in analyses
-            if analysis.wordform.endswith(self.best_analysis[pos])
+            for best_analysis in self.best_analyses[pos]
+            if analysis.wordform.endswith(best_analysis)
         ]
 
     @staticmethod
@@ -107,14 +109,10 @@ class ParadigmGenerator:
         no_compounds = self.get_no_compounds(with_best_analysis)
 
         if no_compounds:
-            if len(no_compounds) == 1:
-                result = no_compounds[0].wordform.replace(self.best_analysis[pos], "")
-                return result
-        else:
-            if with_best_analysis:
-                shortest_compound = self.get_shortest_compound(with_best_analysis)
-                result = shortest_compound.wordform.replace(self.best_analysis[pos], "")
-                return result
+            return no_compounds[0].wordform
+
+        if with_best_analysis:
+            return self.get_shortest_compound(with_best_analysis).wordform
 
         return ""
 
