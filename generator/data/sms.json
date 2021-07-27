@@ -1,30 +1,4 @@
 {
-  "# Full paradigm grammar": [
-    "# Full paradigm grammar"
-  ],
-  "#": [
-    "#",
-    "#",
-    "#"
-  ],
-  "# Used in paradigm generator.": [
-    "# Used in paradigm generator."
-  ],
-  "# List the tag groups in the order they are given to generator.": [
-    "# List the tag groups in the order they are given to generator."
-  ],
-  "# The names of the tag groups are listed in korpustags.txt": [
-    "# The names of the tag groups are listed in korpustags.txt"
-  ],
-  "# \"?\" marks the optionality of the tag.": [
-    "# \"?\" marks the optionality of the tag."
-  ],
-  "# It is not possible to mark alternation of the different tags.": [
-    "# It is not possible to mark alternation of the different tags."
-  ],
-  "# $Id: paradigm_full.sme.txt 42879 2011-05-25 19:59:08Z trond $": [
-    "# $Id: paradigm_full.sme.txt 42879 2011-05-25 19:59:08Z trond $"
-  ],
   "N": [
     "N+Sg+Nom",
     "N+Sg+Gen",
@@ -386,6 +360,33 @@
     "N+Ess+PxPl1",
     "N+Ess+PxPl2",
     "N+Ess+PxPl3",
+    "N+Prop+Sg+Nom",
+    "N+Prop+Sg+Gen",
+    "N+Prop+Sg+Acc",
+    "N+Prop+Sg+Par",
+    "N+Prop+Sg+Ill",
+    "N+Prop+Sg+Loc",
+    "N+Prop+Sg+Com",
+    "N+Prop+Sg+Abe",
+    "N+Prop+Sg+Ess",
+    "N+Prop+Pl+Nom",
+    "N+Prop+Pl+Gen",
+    "N+Prop+Pl+Acc",
+    "N+Prop+Pl+Par",
+    "N+Prop+Pl+Ill",
+    "N+Prop+Pl+Loc",
+    "N+Prop+Pl+Com",
+    "N+Prop+Pl+Abe",
+    "N+Prop+Pl+Ess",
+    "N+Prop+Du+Nom",
+    "N+Prop+Du+Gen",
+    "N+Prop+Du+Acc",
+    "N+Prop+Du+Par",
+    "N+Prop+Du+Ill",
+    "N+Prop+Du+Loc",
+    "N+Prop+Du+Com",
+    "N+Prop+Du+Abe",
+    "N+Prop+Du+Ess",
     "N+ACR",
     "N+ACR+Nom",
     "N+ACR+Gen",
