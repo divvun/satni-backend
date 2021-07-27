@@ -29,6 +29,10 @@ class TestParadigmGenerator(unittest.TestCase):
             "olgoriika+N+Cmp/SgNom+Cmp#ášši",
             "N",
         ),  # the compound is returned from the find_best_analysis
+        (
+            "viellja+N+Der/lasj",
+            "A",
+        ),  # the derivation is returned from the find_best_analysis
     )
     def test_generate(self, word, partOfSpeech):
         """Test that the engine itself works as expected."""
@@ -38,6 +42,7 @@ class TestParadigmGenerator(unittest.TestCase):
         ("sihkkarvuođaeiseváldi", "N", "sihkarvuođaeiseváldi+v3"),
         ("gieldaviessu", "N", "gielda+N+Cmp/SgNom+Cmp#viessu"),
         ("olgoriikaášši", "N", "olgoriika+N+Cmp/SgNom+Cmp#ášši"),
+        ("vieljalaš", "A", "viellja+N+Der/lasj"),
     )
     def test_find_best_analysis(self, lemma, pos, best_analysis):
         """Test that the best analysis is found."""

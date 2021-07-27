@@ -25,10 +25,11 @@ class ParadigmGenerator:
         self.lang = lang
         self.paradigm_templates = self.read_taglist()
         self.best_analyses = {
-            "N": [
+            pos: [
                 f"+{paradigm_template}"
-                for paradigm_template in self.paradigm_templates["N"]
-            ],
+                for paradigm_template in self.paradigm_templates[pos]
+            ]
+            for pos in ["N", "A"]
         }
 
     def read_taglist(self):
