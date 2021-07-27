@@ -39,7 +39,7 @@ class ParadigmGenerator:
         )
 
     def analyse(self, word):
-        """Generate a paradigm."""
+        """Analyse the given wordform."""
         return (
             Analysis(ATTS.sub("", analysis[0]), analysis[1])
             for analysis in self.analyser.lookup(word)
@@ -111,9 +111,10 @@ class ParadigmGenerator:
                 result = no_compounds[0].wordform.replace(self.best_analysis[pos], "")
                 return result
         else:
-            shortest_compound = self.get_shortest_compound(with_best_analysis)
-            result = shortest_compound.wordform.replace(self.best_analysis[pos], "")
-            return result
+            if with_best_analysis:
+                shortest_compound = self.get_shortest_compound(with_best_analysis)
+                result = shortest_compound.wordform.replace(self.best_analysis[pos], "")
+                return result
 
         return ""
 
