@@ -61,7 +61,7 @@ def run():
             #         else 0,
             #     )
             generated = list(
-                current_generator.generate_wordforms(lemma.lemma, lemma.pos)
+                current_generator.generate_and_check(lemma.lemma, lemma.pos)
             )
             if not generated:
                 counter[f"{lang}_not_generated"] += 1
