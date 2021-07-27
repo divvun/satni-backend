@@ -88,6 +88,9 @@ class ParadigmGenerator:
     @staticmethod
     def get_shortest_compound(analyses):
         """Find the shortest analysis."""
+        if len(analyses) == 1:
+            return analyses[0]
+
         shortest_analysis, *further_analysis = analyses
 
         for analysis in further_analysis:
