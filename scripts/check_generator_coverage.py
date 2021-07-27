@@ -69,21 +69,20 @@ def run():
                 analyses = list(current_analyser.analyse(lemma.lemma))
                 if not analyses:
                     counter[f"{lang}_not_analysed"] += 1
-                # print(lang)
-                # print(f"\t{lemma.lemma} {lemma.pos}")
-                # print(
-                #     "\n".join(
-                #         [
-                #             f"\t\t{a_lemma}"
-                #             for a_lemma in current_analyser.lemmatise(lemma.lemma)
-                #         ]
-                #     )
-                # )
-                # print(
-                #     "\n".join(
-                #         f"\t\t\t{analysis.analysis}"
-                #         for analysis in current_analyser.analyse(lemma.lemma)
-                #     )
-                # )
+                print(f"{lemma.lemma} {lemma.pos} {lang}")
+                print(
+                    "\n".join(
+                        [
+                            f"\t{a_lemma}"
+                            for a_lemma in current_analyser.lemmatise(lemma.lemma)
+                        ]
+                    )
+                )
+                print(
+                    "\n".join(
+                        f"\t\t{analysis.analysis}"
+                        for analysis in current_analyser.analyse(lemma.lemma)
+                    )
+                )
 
-        print(" ".join((f"{key}: {count}" for key, count in counter.items())))
+    print(" ".join((f"{key}: {count}" for key, count in counter.items())))
