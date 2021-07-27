@@ -33,16 +33,26 @@ class TestParadigmGenerator(unittest.TestCase):
             "viellja+N+Der/lasj",
             "A",
         ),  # the derivation is returned from the find_best_analysis
+        (
+            "njammat+V+TV+Der/PassS+V+IV+Der/d",
+            "V",
+        ),
+        (
+            "nubbi nubbi",
+            "Pron",
+        ),
     )
-    def test_generate(self, word, partOfSpeech):
+    def test_generate(self, word, part_of_speech):
         """Test that the engine itself works as expected."""
-        assert list(self.generator.generate_wordforms(word, partOfSpeech)) != []
+        assert list(self.generator.generate_wordforms(word, part_of_speech)) != []
 
     @params(
         ("sihkkarvuođaeiseváldi", "N", "sihkarvuođaeiseváldi+v3"),
         ("gieldaviessu", "N", "gielda+N+Cmp/SgNom+Cmp#viessu"),
         ("olgoriikaášši", "N", "olgoriika+N+Cmp/SgNom+Cmp#ášši"),
         ("vieljalaš", "A", "viellja+N+Der/lasj"),
+        ("njammot", "V", "njammat+V+TV+Der/PassS+V+IV+Der/d"),
+        ("nuppit nuppiid", "Pron", "nubbi nubbi"),
     )
     def test_find_best_analysis(self, lemma, pos, best_analysis):
         """Test that the best analysis is found."""

@@ -29,7 +29,7 @@ class ParadigmGenerator:
                 f"+{paradigm_template}"
                 for paradigm_template in self.paradigm_templates[pos]
             ]
-            for pos in ["N", "A"]
+            for pos in ["N", "A", "V", "Pron"]
         }
 
     def read_taglist(self):
