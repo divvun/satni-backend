@@ -1,5 +1,5 @@
 fin: 31556 fin_not_generated: 11045 fin_not_analysed: 3243
-sma: 15243 sma_not_generated: 5720 sma_not_analysed: 88
+sma: 15243 sma_not_generated: 304 sma_not_analysed: 88
 sme: 47221 sme_not_generated: 948 sme_not_analysed: 589
 smj: 8822 smj_not_generated: 985 smj_not_analysed: 143
 smn: 24091 smn_not_generated: 2077 smn_not_analysed: 381
