@@ -82,7 +82,9 @@ class ParadigmGenerator:
     def get_with_best_analysis(self, analyses, pos):
         """Remove analyses without the best analysis."""
         return [
-            Analysis(analysis.wordform.replace(best_analysis, ""), analysis.weight)
+            Analysis(
+                "".join(analysis.wordform.rsplit(best_analysis, 1)), analysis.weight
+            )
             for analysis in analyses
             for best_analysis in self.best_analyses[pos]
             if analysis.wordform.endswith(best_analysis)
