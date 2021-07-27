@@ -37,6 +37,7 @@ class TestParadigmGenerator(unittest.TestCase):
     @params(
         ("sihkkarvuođaeiseváldi", "N", "sihkarvuođaeiseváldi+v3"),
         ("gieldaviessu", "N", "gielda+N+Cmp/SgNom+Cmp#viessu"),
+        ("olgoriikaášši", "N", "olgoriika+N+Cmp/SgNom+Cmp#ášši"),
     )
     def test_find_best_analysis(self, lemma, pos, best_analysis):
         """Test that the best analysis is found."""
