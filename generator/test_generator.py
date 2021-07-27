@@ -12,7 +12,7 @@ class TestParadigmGenerator(unittest.TestCase):
 
     def setUp(self):
         self.generators = {
-            language: ParadigmGenerator(language) for language in ["sme", "sma"]
+            language: ParadigmGenerator(language) for language in ["sme", "sma", "fin"]
         }
 
     @params(
@@ -50,6 +50,7 @@ class TestParadigmGenerator(unittest.TestCase):
             "Pron",
         ),
         ("sma", "Magdiel", "N"),
+        ("fin", "shakki+N+Sg+Nom+Cmp#liitto", "N"),
     )
     def test_generate(self, language, word, part_of_speech):
         """Test that the engine itself works as expected."""
@@ -66,6 +67,7 @@ class TestParadigmGenerator(unittest.TestCase):
         ("sme", "njammot", "V", "njammat+V+TV+Der/PassS+V+IV+Der/d"),
         ("sme", "nuppit nuppiid", "Pron", "nubbi nubbi"),
         ("sma", "Magdiel", "N", "Magdiel"),
+        ("fin", "shakkiliitto", "N", "shakki+N+Sg+Nom+Cmp#liitto"),
     )
     def test_find_best_analysis(self, language, lemma, pos, best_analysis):
         """Test that the best analysis is found."""
