@@ -53,14 +53,22 @@ class ParadigmGenerator:
 
         return self.find_best_analysis(word, pos)
 
+    def generate_and_check(self, word, pos):
+        wordforms = list(self.generate_wordforms(word, pos))
+
+        if wordforms:
+            return wordforms
+
+        if pos in self.best_analysis.keys():
+            generatable_word = self.make_generatable_word(word, pos)
+            return list(self.generate_wordforms(generatable_word, pos))
+
+        return []
+
     def generate_wordforms(self, word, pos):
         """Given a word and pos, generate a paradigm."""
-        generatable_word = self.make_generatable_word(word, pos)
-
         for paradigm_template in self.paradigm_templates[pos]:
-            generated_wordforms = list(
-                self.generate(generatable_word, paradigm_template)
-            )
+            generated_wordforms = list(self.generate(word, paradigm_template))
             if generated_wordforms:
                 yield paradigm_template, generated_wordforms
 
