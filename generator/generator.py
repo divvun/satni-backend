@@ -152,7 +152,7 @@ def main():
             ]
         },
         "smj": {"N": ["A-vitamijnna", "biebbmobárnne", "loahkka", "addnejuogos"]},
-        "fin": {"N": ["4H-kerholainen", "aakkosto"]},
+        "fin": {"N": ["4H-kerholainen", "aakkosto"], "V": ["leivittää"]},
         "smn": {"N": ["akselkoskâ", "eeči", "ovdâjuurdâ", "aalmuglâšeepos"]},
         "sms": {"N": ["kåʹšǩǩjueʹljest", "jueʹlǧǧ"], "V": ["ruppõõvvâd"]},
         "sma": {
