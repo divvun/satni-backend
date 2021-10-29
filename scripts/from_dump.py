@@ -258,14 +258,14 @@ def add_to_stems(lemma, dictname, src, target):
         print(lemma)
 
 
-def make_entries(dictxml, dictname):
+def make_entries(dictxml, dictprefix):
     pair = dictxml.getroot().get("id")
     src = pair[:3]
     target = pair[3:]
     for entry in dictxml.iter("e"):
         if entry.get("src") != "gg":
             dict_entry = DictEntry(
-                dictName=f"{dictname}{src}{target}",
+                dictName=f"{dictprefix}{src}{target}",
                 srcLang=src,
                 targetLang=target,
                 lookupLemmas=make_lemmas(entry.xpath(".//l"), src),
@@ -274,14 +274,14 @@ def make_entries(dictxml, dictname):
 
             for lookup_lemma in dict_entry.lookupLemmas:
                 add_to_stems(
-                    sammallahti_replacer(lookup_lemma.lemma), dictname, src, target
+                    sammallahti_replacer(lookup_lemma.lemma), dictprefix, src, target
                 )
 
             for translation_group in dict_entry.translationGroups:
                 for translation_lemma in translation_group.translationLemmas:
                     add_to_stems(
                         sammallahti_replacer(translation_lemma.lemma),
-                        dictname,
+                        dictprefix,
                         src,
                         target,
                     )
@@ -292,7 +292,7 @@ def make_entries(dictxml, dictname):
 def import_dictfile(xml_file):
     print(f"\t{os.path.basename(xml_file)}")
     dictxml = parse_xmlfile(xml_file)
-    make_entries(dictxml, dictname="gt")
+    make_entries(dictxml, dictprefix="gt")
 
 
 def validate_dictfile(xml_file):
@@ -338,7 +338,7 @@ def import_sammalahti():
     xml_file = os.path.join("../sammallahti/sammallahti.xml")
     try:
         print(f"\t{os.path.basename(xml_file)}")
-        make_entries(parse_xmlfile(xml_file), dictname="sammallahti")
+        make_entries(parse_xmlfile(xml_file), dictprefix="sammallahti")
     except etree.XMLSyntaxError as error:
         print(
             "Syntax error in {} "
