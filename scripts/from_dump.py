@@ -351,7 +351,7 @@ def parse_xmlfile(xml_file):
     return etree.parse(xml_file, parser=parser)
 
 
-def import_sammalahti():
+def import_sammallahti():
     print(f"Pekka Sammallahtis sme-fin dictionary")
     xml_file = os.path.join("../sammallahti/sammallahti.xml")
     try:
@@ -389,7 +389,7 @@ def run():
         raise SystemExit(
             "Invalid dicts, stopping import:\n{}".format("\n".join(invalids))
         )
-    import_sammalahti()
+    import_sammallahti()
     import_dicts()
     make_m()
     make_stems()
