@@ -128,6 +128,18 @@ def get_valid_langs(concept):
     }
 
 
+def make_concepts(title, concept, valid_langs):
+    for lang in valid_langs:
+        c = Concept(
+            name=f"{title}",
+            definition=get_definition(lang, concept),
+            explanation=get_explanation(lang, concept),
+            terms=make_terms(lang, concept),
+            collections=[collection for collection in concept.collections],
+        )
+        c.save()
+
+
 def make_m():
     print("Importing TermWiki content")
     dumphandler = bot.DumpHandler()
@@ -135,15 +147,7 @@ def make_m():
         if concept.has_sanctioned_sami():
             valid_langs = get_valid_langs(concept)
             extract_term_stems(concept, valid_langs)
-            for lang in valid_langs:
-                c = Concept(
-                    name=f"{title}",
-                    definition=get_definition(lang, concept),
-                    explanation=get_explanation(lang, concept),
-                    terms=make_terms(lang, concept),
-                    collections=[collection for collection in concept.collections],
-                )
-                c.save()
+            make_concepts(title, concept, valid_langs)
 
 
 def make_empty_stem(lemma):
