@@ -277,14 +277,15 @@ def make_entries(dictxml, dictprefix):
                     sammallahti_replacer(lookup_lemma.lemma), dictprefix, src, target
                 )
 
-            for translation_group in dict_entry.translationGroups:
-                for translation_lemma in translation_group.translationLemmas:
-                    add_to_stems(
-                        sammallahti_replacer(translation_lemma.lemma),
-                        dictprefix,
-                        src,
-                        target,
-                    )
+            if dictprefix == "ps":
+                for translation_group in dict_entry.translationGroups:
+                    for translation_lemma in translation_group.translationLemmas:
+                        add_to_stems(
+                            sammallahti_replacer(translation_lemma.lemma),
+                            dictprefix,
+                            src,
+                            target,
+                        )
 
             dict_entry.save()
 
