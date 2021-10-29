@@ -146,22 +146,23 @@ def make_m():
                 c.save()
 
 
+def make_empty_stem(lemma):
+    STEMS[lemma] = {key: set() for key in ["fromlangs", "tolangs", "dicts"]}
+
+
 def extract_term_stems(concept, valid_langs):
     for lang in valid_langs:
         for expression in same_lang_sanctioned_expressions(
             lang, concept.related_expressions
         ):
-            if not STEMS.get(expression["expression"]):
-                STEMS[expression["expression"]] = {}
-                STEMS[expression["expression"]]["fromlangs"] = set()
-                STEMS[expression["expression"]]["tolangs"] = set()
-                STEMS[expression["expression"]]["dicts"] = set()
+            lemma = expression["expression"]
+            stem = STEMS.get(lemma, make_empty_stem(lemma))
 
-            STEMS[expression["expression"]]["dicts"].add("termwiki")
-            STEMS[expression["expression"]]["fromlangs"].add(LANGS[lang])
+            stem["dicts"].add("termwiki")
+            stem["fromlangs"].add(LANGS[lang])
             for lang2 in valid_langs:
                 if lang2 != lang:
-                    STEMS[expression["expression"]]["tolangs"].add(LANGS[lang2])
+                    stem["tolangs"].add(LANGS[lang2])
 
 
 # Dict import below here
@@ -245,17 +246,12 @@ def make_translation_groups(translation_groups, target):
 
 def add_to_stems(lemma, dictname, src, target):
     if "(+" not in lemma:
-        if not STEMS.get(lemma):
-            STEMS[lemma] = {}
-            STEMS[lemma]["fromlangs"] = set()
-            STEMS[lemma]["tolangs"] = set()
-            STEMS[lemma]["dicts"] = set()
-
-        STEMS[lemma]["dicts"].add(f"{dictname}{src}{target}")
-        STEMS[lemma]["fromlangs"].add(src)
-        STEMS[lemma]["tolangs"].add(target)
+        stem = STEMS.get(lemma, make_empty_stem(lemma))
+        stem["dicts"].add(f"{dictname}{src}{target}")
+        stem["fromlangs"].add(src)
+        stem["tolangs"].add(target)
     else:
-        print(lemma)
+        print(f"Not making {lemma} searchable")
 
 
 def add_dictentry_to_stems(dict_entry, dictprefix, src, target):
