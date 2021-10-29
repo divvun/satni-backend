@@ -258,6 +258,21 @@ def add_to_stems(lemma, dictname, src, target):
         print(lemma)
 
 
+def add_dictentry_to_stems(dict_entry, dictprefix, src, target):
+    for lookup_lemma in dict_entry.lookupLemmas:
+        add_to_stems(sammallahti_replacer(lookup_lemma.lemma), dictprefix, src, target)
+
+    if dictprefix == "ps":
+        for translation_group in dict_entry.translationGroups:
+            for translation_lemma in translation_group.translationLemmas:
+                add_to_stems(
+                    sammallahti_replacer(translation_lemma.lemma),
+                    dictprefix,
+                    src,
+                    target,
+                )
+
+
 def make_entries(dictxml, dictprefix):
     pair = dictxml.getroot().get("id")
     src = pair[:3]
@@ -271,23 +286,8 @@ def make_entries(dictxml, dictprefix):
                 lookupLemmas=make_lemmas(entry.xpath(".//l"), src),
                 translationGroups=make_translation_groups(entry.xpath(".//tg"), target),
             )
-
-            for lookup_lemma in dict_entry.lookupLemmas:
-                add_to_stems(
-                    sammallahti_replacer(lookup_lemma.lemma), dictprefix, src, target
-                )
-
-            if dictprefix == "ps":
-                for translation_group in dict_entry.translationGroups:
-                    for translation_lemma in translation_group.translationLemmas:
-                        add_to_stems(
-                            sammallahti_replacer(translation_lemma.lemma),
-                            dictprefix,
-                            src,
-                            target,
-                        )
-
             dict_entry.save()
+            add_dictentry_to_stems(dict_entry, dictprefix, src, target)
 
 
 def import_dictfile(xml_file):
