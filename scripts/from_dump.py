@@ -260,7 +260,14 @@ def add_to_stems(lemma, dictname, src, target):
 
 def add_dictentry_to_stems(dict_entry, dictprefix, src, target):
     for lookup_lemma in dict_entry.lookupLemmas:
-        add_to_stems(sammallahti_replacer(lookup_lemma.lemma), dictprefix, src, target)
+        add_to_stems(
+            sammallahti_replacer(lookup_lemma.lemma)
+            if dictprefix == "ps"
+            else lookup_lemma.lemma,
+            dictprefix,
+            src,
+            target,
+        )
 
     if dictprefix == "ps":
         for translation_group in dict_entry.translationGroups:
@@ -273,10 +280,7 @@ def add_dictentry_to_stems(dict_entry, dictprefix, src, target):
                 )
 
 
-def make_entries(dictxml, dictprefix):
-    pair = dictxml.getroot().get("id")
-    src = pair[:3]
-    target = pair[3:]
+def make_dict_entries(dictxml, dictprefix, src, target):
     for entry in dictxml.iter("e"):
         if entry.get("src") != "gg":
             dict_entry = DictEntry(
@@ -287,7 +291,16 @@ def make_entries(dictxml, dictprefix):
                 translationGroups=make_translation_groups(entry.xpath(".//tg"), target),
             )
             dict_entry.save()
-            add_dictentry_to_stems(dict_entry, dictprefix, src, target)
+            yield dict_entry
+
+
+def make_entries(dictxml, dictprefix):
+    pair = dictxml.getroot().get("id")
+    src = pair[:3]
+    target = pair[3:]
+
+    for dict_entry in make_dict_entries(dictxml, dictprefix, src, target):
+        add_dictentry_to_stems(dict_entry, dictprefix, src, target)
 
 
 def import_dictfile(xml_file):
