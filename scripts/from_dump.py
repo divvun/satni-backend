@@ -44,6 +44,8 @@ DICTS = [
     "finsmn",
     "smnfin",
     "finnob",
+    "smesma",
+    "smasme"
     # uncomment these to do generation coverage
     # "smesmj",
     # "smjnob",
@@ -282,7 +284,11 @@ def add_dictentry_to_stems(dict_entry, dictprefix, src, target):
 
 def make_dict_entries(dictxml, dictprefix, src, target):
     for entry in dictxml.iter("e"):
-        if entry.get("src") != "gg":
+        if (
+            f"{src}{target}" not in ["smesma", "smasme"] and entry.get("src") != "gg"
+        ) or (
+            f"{src}{target}" in ["smesma", "smasme"] and entry.get("note") == "checked"
+        ):
             dict_entry = DictEntry(
                 dictName=f"{dictprefix}{src}{target}",
                 srcLang=src,
