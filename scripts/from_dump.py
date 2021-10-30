@@ -67,10 +67,7 @@ def sammallahti_replacer(line):
 
 
 def make_lemma(lang, expression):
-    lemma_key = (
-        f"{expression['expression']}{expression['expression']}"
-        f"{expression['pos']}{LANGS[lang]}"
-    )
+    lemma_key = f"{expression['expression']}{expression['pos']}{LANGS[lang]}"
     if not LEMMAS.get(lemma_key):
         lemma = Lemma(
             lemma=expression["expression"],
