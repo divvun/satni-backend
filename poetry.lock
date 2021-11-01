@@ -286,14 +286,6 @@ setproctitle = ["setproctitle"]
 tornado = ["tornado (>=0.2)"]
 
 [[package]]
-name = "hfst-dev"
-version = "3.15.0.10b0"
-description = "Python interface for HFST"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "idna"
 version = "2.10"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -656,7 +648,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "131788550d0636d132b13469b1050dd4f6a400f666bcd3cac3a3ccb339a62af6"
+content-hash = "b4056e2eb06408aa51eb42fe5e1c6fe19524e08e1645accad43f788e6accc5d8"
 
 [metadata.files]
 aniso8601 = [
@@ -798,16 +790,6 @@ graphql-relay = [
 gunicorn = [
     {file = "gunicorn-20.1.0-py3-none-any.whl", hash = "sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e"},
     {file = "gunicorn-20.1.0.tar.gz", hash = "sha256:e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8"},
-]
-hfst-dev = [
-    {file = "hfst_dev-3.15.0.10b0-cp35-cp35m-macosx_10_7_x86_64.whl", hash = "sha256:32e62fb5b647f4d5d48bd4fb99fe55926e4a3b1d60c994f948ce80547ad474c0"},
-    {file = "hfst_dev-3.15.0.10b0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:6a585ca4e838a9595a747e1b042bb8f922f44c7e050e65262a45833449f8d74a"},
-    {file = "hfst_dev-3.15.0.10b0-cp36-cp36m-macosx_10_7_x86_64.whl", hash = "sha256:524dee745a99eb94d61b4f12d9e1c915fb75f1e9e4f94e0dccb35f40f6d8e408"},
-    {file = "hfst_dev-3.15.0.10b0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:cd23ed8fb01a9505dfec1d97d2ab2aa8c83e1cad202ffde62c4c9f7153e54405"},
-    {file = "hfst_dev-3.15.0.10b0-cp37-cp37m-macosx_10_7_x86_64.whl", hash = "sha256:80740124136fc923d56fc08fcf2328df88d45997e6dc49f2144b74819f4e9666"},
-    {file = "hfst_dev-3.15.0.10b0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:0307b02a5c9fec2a47c0256fedc2aa72e3330086da733a4d3965b84d22c7c198"},
-    {file = "hfst_dev-3.15.0.10b0-cp38-cp38-macosx_10_7_x86_64.whl", hash = "sha256:79780916ed75fa371168ee876ad1bffee67155c64a4321c79e6f3d0009a79b3f"},
-    {file = "hfst_dev-3.15.0.10b0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:765ceff554edc1a192140f0f510d9c6a344e64ca0ca69df7fb5324136ca25a56"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
