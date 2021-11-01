@@ -4,7 +4,7 @@ import sys
 from collections import namedtuple
 from pathlib import Path
 
-import hfst
+import hfst_dev
 
 ATTS = re.compile(r"@[^@]+@")
 
@@ -18,10 +18,10 @@ class Lemmatiser:
     def __init__(self, lang):
         """Initialise HFST analysers."""
         path = Path("/usr/share/giella") / lang
-        self.analyser = hfst.HfstInputStream(
+        self.analyser = hfst_dev.HfstInputStream(
             str(path / "analyser-gt-desc.hfstol")
         ).read()
-        self.generator = hfst.HfstInputStream(
+        self.generator = hfst_dev.HfstInputStream(
             str(path / "generator-gt-norm.hfstol")
         ).read()
 

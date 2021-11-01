@@ -4,7 +4,7 @@ import re
 from collections import namedtuple
 from pathlib import Path
 
-import hfst
+import hfst_dev
 
 ATTS = re.compile(r"@[^@]+@")
 Analysis = namedtuple("Analysis", "wordform weight")
@@ -18,10 +18,10 @@ class ParadigmGenerator:
     def __init__(self, lang):
         """Initialise HFST analysers."""
         analyser_path = Path("/usr/share/giella") / lang / "analyser-gt-desc.hfstol"
-        self.analyser = hfst.HfstInputStream(str(analyser_path)).read()
+        self.analyser = hfst_dev.HfstInputStream(str(analyser_path)).read()
 
         generator_path = Path("/usr/share/giella") / lang / "generator-gt-norm.hfstol"
-        self.generator = hfst.HfstInputStream(str(generator_path)).read()
+        self.generator = hfst_dev.HfstInputStream(str(generator_path)).read()
         self.lang = lang
         self.paradigm_templates = self.read_taglist()
         self.best_analyses = {
