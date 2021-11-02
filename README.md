@@ -1,7 +1,11 @@
 This is a [Django](https://www.djangoproject.com/) backend for [sátni.org](http://sátni.org) that uses [Mongodb](https://www.mongodb.com/) to serve a GraphQL-endpoint to the [sátni.org-frontend](https://github.com/divvun/satni-frontend) application.
 
+The development of this backend is most easily done in a Linux environment. On Mac, the needed fsts must be compiled and installed from source.
+
 # Prerequites
 * Install and setup mongodb
+* Install [apertium-nightly](https://wiki.apertium.org/wiki/Install_Apertium_core_using_packaging)
+  * Install the packages giella-fin, giella-nob, giella-sma, giella-sme, giella-smj, giella-smn, giella-sms, python3-hfst
 * Checkout the langtech svn repo parallel to this one (svn checkout https://gtsvn.uit.no/langtech/trunk langtech)
 * Set the environment variable GTHOME to point to the working copy of langtech
 * Fetch [poetry](https://python-poetry.org/docs/#installation)
@@ -13,6 +17,15 @@ This is a [Django](https://www.djangoproject.com/) backend for [sátni.org](http
 
 ```bash
 poetry install # install dependencies
+```
+
+Use `poetry env list` and `poetry config --list` to find out where the active
+virtual environment is. Open the file `pyvenv.cfg`, change the line
+`include-system-site-packages = false` to `include-system-site-packages = true`.
+This step is needed because hfst sometimes is uninstallable using poetry (pip,
+setuptools), and we need to use the system packages instead.
+
+```bash
 poetry run python manage.py migrate # migrate the database
 poetry run python manage.py runscript from_dump # import content from langtech
 ```
