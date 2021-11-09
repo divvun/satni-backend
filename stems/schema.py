@@ -61,6 +61,9 @@ class Query(graphene.ObjectType):
         target_langs = kwargs["target_langs"]
         wanted_dicts = kwargs["wanted_dicts"]
 
+        if not search:
+            return []
+
         log_info = [search]
         for key, value in kwargs.items():
             log_info.append(f"{key}:")
