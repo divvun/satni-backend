@@ -22,6 +22,7 @@ class Query(graphene.ObjectType):
     def resolve_concept_list(self, info, exact, **kwargs):
         src_langs = kwargs["src_langs"]
         target_langs = kwargs["target_langs"]
+        langs = set(src_langs + target_langs)
         names = [
             concept.name
             for concept in Concept.objects(
@@ -32,25 +33,17 @@ class Query(graphene.ObjectType):
         if not names:
             return []
 
-        # lat is omitted from this list, we always want it,
-        # unless it is explicitely omitted from the wanted list.
-        # non_sami = ['eng', 'fin', 'nob', 'nno', 'swe']
-        # lemma_langs = [l.language for l in Lemma.objects(lemma=exact)]
-
         name_queries = [Q(name=name) for name in names]
         name_filter = name_queries.pop()
         for item in name_queries:
             name_filter |= item
 
         named = Concept.objects(name_filter)
-        wanted_by_lang = [
-            name
-            for name in named
-            if name.terms[0].expression.language in src_langs
-            or name.terms[0].expression.language in target_langs
+        wanted_by_langs = [
+            name for name in named if name.terms[0].expression.language in langs
         ]
 
-        # if wanted_by_target_lang:
-        #     LOGGER.info(f'{exact} ' f'langs: {", ".join(sorted(wanted))}')
+        if wanted_by_langs:
+            LOGGER.info(f"term: {exact} " f'langs: {", ".join(sorted(langs))}')
 
-        return wanted_by_lang
+        return wanted_by_langs

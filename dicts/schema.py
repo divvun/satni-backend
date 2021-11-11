@@ -33,9 +33,12 @@ class Query(graphene.ObjectType):
         by_target_lang = [d for d in by_src_lang if d.targetLang in target_langs]
         by_dicts = [d for d in by_target_lang if d.dictName in wanted_dicts]
 
-        # if by_dicts:
-        #     LOGGER.info(f'{exact} '
-        #                 f'langs: {", ".join(sorted(wanted))} '
-        #                 f'dicts: {", ".join(sorted(wanted_dicts))}')
+        if by_dicts:
+            LOGGER.info(
+                f"{exact} "
+                f'src: {", ".join(sorted(src_langs))} '
+                f'target: {", ".join(sorted(target_langs))} '
+                f'dicts: {", ".join(sorted(wanted_dicts))}'
+            )
 
         return by_dicts
