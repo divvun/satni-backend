@@ -3,6 +3,7 @@ import glob
 import os
 import re
 import sys
+from datetime import datetime
 
 from lxml import etree
 from mongoengine.errors import ValidationError
@@ -380,12 +381,27 @@ def make_stems():
             print(stem)
 
 
+def update_env(env_path):
+    """Update the datebase name."""
+    with open(env_path) as env:
+        lines = [
+            f"_MONGODB_NAME='satnibackend_{datetime.now().strftime('%Y%m%d')}'"
+            if "_MONGODB_NAME=" in line
+            else line.strip()
+            for line in env
+        ]
+
+    with open(env_path, "w") as env:
+        print("\n".join(lines), file=env)
+
+
 def run():
     invalids = invalid_dicts()
     if list(invalids):
         raise SystemExit(
             "Invalid dicts, stopping import:\n{}".format("\n".join(invalids))
         )
+    update_env(".env")
     import_sammallahti()
     import_dicts()
     make_m()
