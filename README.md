@@ -6,7 +6,7 @@ serve a GraphQL-endpoint to the
 The development of this backend is most easily done in a Linux environment. On
 Mac, the needed fsts must be compiled and installed from source.
 
-# Prerequites
+# Prerequisites
 
 * Install and setup mongodb
 * Install
@@ -199,3 +199,33 @@ curl https://satni.uit.no/newsatni/ \
 --compressed \
 --data-binary '@all.json'
 ```
+
+# Deployment using systemd
+
+Login as the user that should run the service. Clone this repo in the root the
+home directory. Check out the langtech svn repo as described above in the root
+of the home directory, as well. Do all the other steps as described in the
+`Prerequisites` section.
+
+Move into the satni-backend directory, then run these commands:
+
+* `loginctl enable-linger`. This allows users who are not logged in
+  [to run long-running services](https://www.freedesktop.org/software/systemd/man/loginctl.html)
+* `mkdir -p ~/.config/systemd/user/`
+* `cp satni.service.example ~/.config/systemd/user/satni.service`
+* `poetry shell`
+* `which gunicorn`
+
+Edit `~/.config/systemd/user/satni.service`, replace `virtualenv-path/gunicorn`
+with the result you got from `which gunicorn`
+
+## Managing the service
+
+* systemctl --user start satni
+* systemctl --user stop satni
+* systemctl --user restart satni
+
+Checking the status
+
+* systemctl --user status satni
+* journalctl --user-unit satni

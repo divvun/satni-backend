@@ -1,0 +1,15 @@
+[Unit]
+Description = sátni.org graphql backend
+After = network.target
+
+[Service]
+PermissionsStartOnly = true
+PIDFile = %h/satni-backend/run/satni.pid
+WorkingDirectory = %h/satni-backend
+ExecStartPre = mkdir %h/satni-backend/run
+ExecStart = virtualenv-path/gunicorn backend.wsgi -b 0.0.0.0:8000 --pid run/satni.pid
+ExecStopPost = rm -rf %h/satni-backend/run
+PrivateTmp = true
+
+[Install]
+WantedBy = multi-user.target
