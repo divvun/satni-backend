@@ -202,9 +202,9 @@ curl https://satni.uit.no/newsatni/ \
 
 # Deployment using systemd
 
-Login as the user that should run the service. Clone this repo in the root the
-home directory. Check out the langtech svn repo as described above in the root
-of the home directory, as well. Do all the other steps as described in the
+Login as the user that should run the service. Clone this repo in the root of
+the home directory. Check out the langtech svn repo as described above in the
+root of the home directory, as well. Do all the other steps as described in the
 `Prerequisites` section.
 
 Move into the satni-backend directory, then run these commands:
