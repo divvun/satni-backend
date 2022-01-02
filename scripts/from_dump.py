@@ -85,6 +85,7 @@ def make_lemma(lang, expression):
 
 
 def make_terms(lang, concept):
+    """Make terms in the database."""
     for expression in same_lang_sanctioned_expressions(
         lang, concept.related_expressions
     ):
@@ -99,12 +100,14 @@ def make_terms(lang, concept):
 
 
 def get_definition(lang, concept):
+    """Find the definition"""
     for concept_info in concept.data["concept_infos"]:
         if lang == concept_info["language"]:
             return concept_info.get("definition")
 
 
 def get_explanation(lang, concept):
+    """Find the explanatiion."""
     for concept_info in concept.data["concept_infos"]:
         if lang == concept_info["language"]:
             return concept_info.get("explanation")
@@ -311,23 +314,6 @@ def import_dictfile(xml_file):
     make_entries(dictxml, dictprefix="gt")
 
 
-def validate_dictfile(xml_file):
-    try:
-        dictxml = parse_xmlfile(xml_file)
-        pair = dictxml.getroot().get("id")
-        if pair not in xml_file:
-            return f"{xml_file}:\n\tinvalid id: {pair}"
-    except etree.XMLSyntaxError as error:
-        return f"{xml_file}:\n\t{error}"
-
-
-def invalid_dicts():
-    for xml_file in dict_paths():
-        invalid = validate_dictfile(xml_file)
-        if invalid is not None:
-            yield invalid
-
-
 def dict_paths():
     return [
         xml_file
@@ -381,27 +367,7 @@ def make_stems():
             print(stem)
 
 
-def update_env(env_path):
-    """Update the datebase name."""
-    with open(env_path) as env:
-        lines = [
-            f"_MONGODB_NAME='satnibackend_{datetime.now().strftime('%Y%m%d')}'"
-            if "_MONGODB_NAME=" in line
-            else line.strip()
-            for line in env
-        ]
-
-    with open(env_path, "w") as env:
-        print("\n".join(lines), file=env)
-
-
 def run():
-    invalids = invalid_dicts()
-    if list(invalids):
-        raise SystemExit(
-            "Invalid dicts, stopping import:\n{}".format("\n".join(invalids))
-        )
-    update_env(".env")
     import_sammallahti()
     import_dicts()
     make_m()
