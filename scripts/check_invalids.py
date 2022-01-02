@@ -1,5 +1,7 @@
 """Check whether the dictionary files are valid."""
 
+from datetime import datetime
+
 from lxml import etree
 
 from .from_dump import dict_paths, parse_xmlfile

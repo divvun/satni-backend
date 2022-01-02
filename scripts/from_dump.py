@@ -3,7 +3,6 @@ import glob
 import os
 import re
 import sys
-from datetime import datetime
 
 from lxml import etree
 from mongoengine.errors import ValidationError
