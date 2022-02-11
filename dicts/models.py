@@ -29,8 +29,10 @@ class TranslationGroup(EmbeddedDocument):
 
 class DictEntry(Document):
     meta = {"collection": "dicts"}
-    dictName = StringField()
-    srcLang = StringField()
-    targetLang = StringField()
-    lookupLemmas = ListField(ReferenceField(Lemma))
-    translationGroups = ListField(EmbeddedDocumentField(TranslationGroup))
+    dictName = StringField(required=True)
+    srcLang = StringField(required=True)
+    targetLang = StringField(required=True)
+    lookupLemmas = ListField(ReferenceField(Lemma), required=True)
+    translationGroups = ListField(
+        EmbeddedDocumentField(TranslationGroup), required=True
+    )

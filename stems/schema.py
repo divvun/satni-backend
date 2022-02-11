@@ -24,18 +24,18 @@ def get_search_filter(mode, search):
 class Query(graphene.ObjectType):
     stem_list = MongoengineConnectionField(
         StemType,
-        search=graphene.String(),
-        mode=graphene.String(),
-        src_langs=graphene.List(graphene.String),
-        target_langs=graphene.List(graphene.String),
-        wanted_dicts=graphene.List(graphene.String),
+        search=graphene.String(required=True),
+        mode=graphene.String(required=True),
+        src_langs=graphene.List(graphene.String, required=True),
+        target_langs=graphene.List(graphene.String, required=True),
+        wanted_dicts=graphene.List(graphene.String, required=True),
     )
     has_stem = graphene.List(
         StemType,
-        exact=graphene.String(),
-        src_langs=graphene.List(graphene.String),
-        target_langs=graphene.List(graphene.String),
-        wanted_dicts=graphene.List(graphene.String),
+        exact=graphene.String(required=True),
+        src_langs=graphene.List(graphene.String, required=True),
+        target_langs=graphene.List(graphene.String, required=True),
+        wanted_dicts=graphene.List(graphene.String, required=True),
     )
 
     def resolve_has_stem(self, info, exact, **kwargs):

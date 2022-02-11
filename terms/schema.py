@@ -14,9 +14,9 @@ LOGGER = logging.getLogger(__name__)
 class Query(graphene.ObjectType):
     concept_list = graphene.List(
         ConceptType,
-        exact=graphene.String(),
-        src_langs=graphene.List(graphene.String),
-        target_langs=graphene.List(graphene.String),
+        exact=graphene.String(required=True),
+        src_langs=graphene.List(graphene.String, required=True),
+        target_langs=graphene.List(graphene.String, required=True),
     )
 
     def resolve_concept_list(self, info, exact, **kwargs):

@@ -1,0 +1,128 @@
+schema {
+  query: Query
+}
+
+type ConceptType {
+  collections: [String]
+  definition: String
+  dictName: String
+  explanation: String
+  id: ID
+  language: String
+  name: String
+  terms: [TermType]
+}
+
+type DictEntryType {
+  dictName: String
+  id: ID
+  srcLang: String
+  targetLang: String
+  translationGroups: [TranslationGroupType]
+  lookupLemmas(before: String, after: String, first: Int, last: Int, country: String, dialect: String, id: ID, language: String, lemma: String, pos: String, presentationLemma: String): LemmaTypeConnection
+}
+
+type ExampleGroupType {
+  example: String
+  translation: String
+}
+
+type GeneratorAnalysis {
+  wordform: String
+  weight: Float
+}
+
+type GeneratorResultType {
+  paradigmTemplate: String
+  analyses: [GeneratorAnalysis]
+}
+
+type LemmaType implements Node {
+  country: String
+  dialect: String
+  id: ID!
+  language: String
+  lemma: String
+  pos: String
+  presentationLemma: String
+}
+
+type LemmaTypeConnection {
+  pageInfo: PageInfo!
+  edges: [LemmaTypeEdge]!
+}
+
+type LemmaTypeEdge {
+  node: LemmaType
+  cursor: String!
+}
+
+type LemmatiserAnalysis {
+  analysis: String
+  weight: Float
+}
+
+type LemmatiserResultType {
+  language: String
+  wordforms: [String]
+  analyses: [LemmatiserAnalysis]
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Query {
+  generated(origform: String, language: String, partOfSpeech: String): [GeneratorResultType]
+  conceptList(exact: String, srcLangs: [String], targetLangs: [String]): [ConceptType]
+  lemmatised(lookupString: String): [LemmatiserResultType]
+  dictEntryList(exact: String, srcLangs: [String], targetLangs: [String], wantedDicts: [String]): [DictEntryType]
+  stemList(search: String, mode: String, srcLangs: [String], targetLangs: [String], wantedDicts: [String], before: String, after: String, first: Int, last: Int, dicts: String, id: ID, searchStem: String, srclangs: String, stem: String, targetlangs: String): StemTypeConnection
+  hasStem(exact: String, srcLangs: [String], targetLangs: [String], wantedDicts: [String]): [StemType]
+}
+
+type RestrictionType {
+  attributes: String
+  restriction: String
+}
+
+type StemType implements Node {
+  dicts: [String]
+  id: ID!
+  searchStem: String
+  srclangs: [String]
+  stem: String
+  targetlangs: [String]
+}
+
+type StemTypeConnection {
+  pageInfo: PageInfo!
+  edges: [StemTypeEdge]!
+  totalCount: Int
+}
+
+type StemTypeEdge {
+  node: StemType
+  cursor: String!
+}
+
+type TermType {
+  expression: LemmaType
+  note: String
+  sanctioned: Boolean
+  source: String
+  status: String
+}
+
+type TranslationGroupType {
+  exampleGroups: [ExampleGroupType]
+  restriction: RestrictionType
+  translationLemmas(before: String, after: String, first: Int, last: Int, country: String, dialect: String, id: ID, language: String, lemma: String, pos: String, presentationLemma: String): LemmaTypeConnection
+}

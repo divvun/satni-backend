@@ -7,10 +7,10 @@ class Lemma(Document):
     """A representation of lemmas."""
 
     meta = {"collection": "lemmas"}
-    lemma = StringField()
-    presentation_lemma = StringField()
+    lemma = StringField(required=True)
+    presentation_lemma = StringField(required=True)
     pos = StringField()
-    language = StringField()
+    language = StringField(required=True)
     dialect = StringField()
     country = StringField()  # two chars, iso something
 

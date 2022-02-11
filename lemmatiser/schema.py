@@ -14,7 +14,9 @@ LEMMATISERS = {
 class Query(graphene.ObjectType):
     """Query class for lemmatiser."""
 
-    lemmatised = graphene.List(LemmatiserResultType, lookup_string=graphene.String())
+    lemmatised = graphene.List(
+        LemmatiserResultType, lookup_string=graphene.String(required=True)
+    )
 
     def resolve_lemmatised(self, info, lookup_string=None):
         """Lemmatise lookup_string."""

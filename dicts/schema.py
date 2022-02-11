@@ -14,10 +14,10 @@ LOGGER = logging.getLogger(__name__)
 class Query(graphene.ObjectType):
     dict_entry_list = graphene.List(
         DictEntryType,
-        exact=graphene.String(),
-        src_langs=graphene.List(graphene.String),
-        target_langs=graphene.List(graphene.String),
-        wanted_dicts=graphene.List(graphene.String),
+        exact=graphene.String(required=True),
+        src_langs=graphene.List(graphene.String, required=True),
+        target_langs=graphene.List(graphene.String, required=True),
+        wanted_dicts=graphene.List(graphene.String, required=True),
     )
 
     def resolve_dict_entry_list(self, info, wanted_dicts, exact=None, **kwargs):

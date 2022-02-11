@@ -16,17 +16,16 @@ class Term(EmbeddedDocument):
     sanctioned = BooleanField(default=False)
     note = StringField(blank=True, null=True)
     source = StringField(blank=True, null=True)
-    expression = ReferenceField(Lemma)
+    expression = ReferenceField(Lemma, required=True)
 
 
 class Concept(Document):
     meta = {"collection": "terms"}
-    dictName = StringField()
-    name = StringField()
-    language = StringField()
+    name = StringField(required=True)
+    language = StringField(required=True)
     definition = StringField(blank=True, null=True)
     explanation = StringField(blank=True, null=True)
-    terms = ListField(EmbeddedDocumentField(Term))
+    terms = ListField(EmbeddedDocumentField(Term), required=True)
     collections = ListField(StringField())
 
     def __str__(self):
