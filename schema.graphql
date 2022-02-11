@@ -5,20 +5,19 @@ schema {
 type ConceptType {
   collections: [String]
   definition: String
-  dictName: String
   explanation: String
   id: ID
-  language: String
-  name: String
-  terms: [TermType]
+  language: String!
+  name: String!
+  terms: [TermType]!
 }
 
 type DictEntryType {
-  dictName: String
+  dictName: String!
   id: ID
-  srcLang: String
-  targetLang: String
-  translationGroups: [TranslationGroupType]
+  srcLang: String!
+  targetLang: String!
+  translationGroups: [TranslationGroupType]!
   lookupLemmas(before: String, after: String, first: Int, last: Int, country: String, dialect: String, id: ID, language: String, lemma: String, pos: String, presentationLemma: String): LemmaTypeConnection
 }
 
@@ -41,10 +40,10 @@ type LemmaType implements Node {
   country: String
   dialect: String
   id: ID!
-  language: String
-  lemma: String
+  language: String!
+  lemma: String!
   pos: String
-  presentationLemma: String
+  presentationLemma: String!
 }
 
 type LemmaTypeConnection {
@@ -58,14 +57,14 @@ type LemmaTypeEdge {
 }
 
 type LemmatiserAnalysis {
-  analysis: String
-  weight: Float
+  analysis: String!
+  weight: Float!
 }
 
 type LemmatiserResultType {
-  language: String
-  wordforms: [String]
-  analyses: [LemmatiserAnalysis]
+  language: String!
+  wordforms: [String]!
+  analyses: [LemmatiserAnalysis]!
 }
 
 interface Node {
@@ -81,11 +80,11 @@ type PageInfo {
 
 type Query {
   generated(origform: String, language: String, partOfSpeech: String): [GeneratorResultType]
-  conceptList(exact: String, srcLangs: [String], targetLangs: [String]): [ConceptType]
-  lemmatised(lookupString: String): [LemmatiserResultType]
-  dictEntryList(exact: String, srcLangs: [String], targetLangs: [String], wantedDicts: [String]): [DictEntryType]
-  stemList(search: String, mode: String, srcLangs: [String], targetLangs: [String], wantedDicts: [String], before: String, after: String, first: Int, last: Int, dicts: String, id: ID, searchStem: String, srclangs: String, stem: String, targetlangs: String): StemTypeConnection
-  hasStem(exact: String, srcLangs: [String], targetLangs: [String], wantedDicts: [String]): [StemType]
+  conceptList(exact: String!, srcLangs: [String]!, targetLangs: [String]!): [ConceptType]
+  lemmatised(lookupString: String!): [LemmatiserResultType]
+  dictEntryList(exact: String!, srcLangs: [String]!, targetLangs: [String]!, wantedDicts: [String]!): [DictEntryType]
+  stemList(search: String!, mode: String!, srcLangs: [String]!, targetLangs: [String]!, wantedDicts: [String]!, before: String, after: String, first: Int, last: Int, dicts: String, id: ID, searchStem: String, srclangs: String, stem: String, targetlangs: String): StemTypeConnection
+  hasStem(exact: String!, srcLangs: [String]!, targetLangs: [String]!, wantedDicts: [String]!): [StemType]
 }
 
 type RestrictionType {
@@ -96,9 +95,9 @@ type RestrictionType {
 type StemType implements Node {
   dicts: [String]
   id: ID!
-  searchStem: String
+  searchStem: String!
   srclangs: [String]
-  stem: String
+  stem: String!
   targetlangs: [String]
 }
 
