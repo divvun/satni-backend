@@ -132,6 +132,7 @@ def make_concepts(title, concept, valid_langs):
     for lang in valid_langs:
         c = Concept(
             name=f"{title}",
+            language=lang,
             definition=get_definition(lang, concept),
             explanation=get_explanation(lang, concept),
             terms=make_terms(lang, concept),
