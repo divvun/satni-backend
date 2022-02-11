@@ -229,7 +229,7 @@ def make_example(example):
 
 
 def make_examples(examples):
-    return [make_example(example) for example in examples]
+    return [make_example(example) for example in examples if len(example)]
 
 
 def make_translation_group(translation_group, target):
