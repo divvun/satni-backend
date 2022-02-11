@@ -295,8 +295,13 @@ def make_dict_entries(dictxml, dictprefix, src, target):
                 lookupLemmas=make_lemmas(entry.xpath(".//l"), src),
                 translationGroups=make_translation_groups(entry.xpath(".//tg"), target),
             )
-            dict_entry.save()
-            yield dict_entry
+            try:
+                dict_entry.save()
+                yield dict_entry
+            except ValidationError as error:
+                print("Invalid entry")
+                print(etree.tostring(entry, encoding="unicode"))
+                print(str(error))
 
 
 def make_entries(dictxml, dictprefix):
