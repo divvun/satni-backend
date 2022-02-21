@@ -22,8 +22,8 @@ type DictEntryType {
 }
 
 type ExampleGroupType {
-  example: String
-  translation: String
+  example: String!
+  translation: String!
 }
 
 type GeneratorAnalysis {

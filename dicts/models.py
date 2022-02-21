@@ -12,8 +12,8 @@ from lemmas.models import Lemma
 
 
 class ExampleGroup(EmbeddedDocument):
-    example = StringField()
-    translation = StringField()
+    example = StringField(required=True)
+    translation = StringField(required=True)
 
 
 class Restriction(EmbeddedDocument):
