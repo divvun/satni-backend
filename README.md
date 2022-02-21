@@ -59,6 +59,14 @@ Find out which queries are available by going to the built-in GraphQL IDE at
 The startup of this repo was the
 [Django and GraphQL intro](https://www.howtographql.com/graphql-python/1-getting-started/)
 
+## GraphQL schema
+
+To dump the schema, run:
+
+```bash
+poetry run python manage.py graphql_schema --out schema.graphql
+```
+
 # Queries
 
 The examples below query the production server. If you'd like to do queries on
