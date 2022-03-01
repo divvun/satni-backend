@@ -27,12 +27,12 @@ type ExampleGroupType {
 }
 
 type GeneratorAnalysis {
-  wordform: String
-  weight: Float
+  wordform: String!
+  weight: Float!
 }
 
 type GeneratorResultType {
-  paradigmTemplate: String
+  paradigmTemplate: String!
   analyses: [GeneratorAnalysis]
 }
 
