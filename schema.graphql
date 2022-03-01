@@ -79,7 +79,7 @@ type PageInfo {
 }
 
 type Query {
-  generated(origform: String, language: String, partOfSpeech: String): [GeneratorResultType]
+  generated(origform: String!, language: String!, paradigmTemplates: [String]!): [GeneratorResultType]
   conceptList(exact: String!, srcLangs: [String]!, targetLangs: [String]!): [ConceptType]
   lemmatised(lookupString: String!): [LemmatiserResultType]
   dictEntryList(exact: String!, srcLangs: [String]!, targetLangs: [String]!, wantedDicts: [String]!): [DictEntryType]

@@ -67,9 +67,9 @@ class ParadigmGenerator:
 
         return []
 
-    def generate_wordforms(self, word, pos):
+    def generate_wordforms(self, word, paradigm_templates):
         """Given a word and pos, generate a paradigm."""
-        for paradigm_template in self.paradigm_templates[pos]:
+        for paradigm_template in paradigm_templates:
             generated_wordforms = list(self.generate(word, paradigm_template))
             if generated_wordforms:
                 yield paradigm_template, generated_wordforms

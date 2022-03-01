@@ -15,12 +15,12 @@ class Query(graphene.ObjectType):
 
     generated = graphene.List(
         GeneratorResultType,
-        origform=graphene.String(),
-        language=graphene.String(),
-        partOfSpeech=graphene.String(),
+        origform=graphene.String(required=True),
+        language=graphene.String(required=True),
+        paradigmTemplates=graphene.List(graphene.String, required=True),
     )
 
-    def resolve_generated(self, info, origform, language, partOfSpeech):
+    def resolve_generated(self, info, origform, language, paradigmTemplates):
         """Generate wordforms."""
         return [
             {
@@ -31,6 +31,6 @@ class Query(graphene.ObjectType):
                 ],
             }
             for paradigm_template, analyses in GENERATORS[language].generate_wordforms(
-                origform, partOfSpeech
+                origform, paradigmTemplates
             )
         ]
