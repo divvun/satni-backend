@@ -20,6 +20,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_concept_list(self, info, exact, **kwargs):
+        LOGGER.info(f"term: {exact}")
         src_langs = kwargs["src_langs"]
         target_langs = kwargs["target_langs"]
         langs = set(src_langs + target_langs)
@@ -30,6 +31,7 @@ class Query(graphene.ObjectType):
             )
         ]
 
+        LOGGER.info(f"names: {names}")
         if not names:
             return []
 
