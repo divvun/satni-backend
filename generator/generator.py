@@ -23,14 +23,6 @@ class ParadigmGenerator:
         generator_path = Path("/usr/share/giella") / lang / "generator-gt-norm.hfstol"
         self.generator = hfst.HfstInputStream(str(generator_path)).read()
         self.lang = lang
-        self.paradigm_templates = self.read_taglist()
-        self.best_analyses = {
-            pos: [
-                f"+{paradigm_template}"
-                for paradigm_template in self.paradigm_templates[pos]
-            ]
-            for pos in ["N", "A", "V", "Pron"]
-        }
 
     def read_taglist(self):
         """Read paradigm generation templates."""
@@ -39,9 +31,10 @@ class ParadigmGenerator:
 
     def generate(self, word, paradigm_template):
         """Generate a paradigm."""
+        print("generate", f"{word}{paradigm_template}")
         return (
             Analysis(ATTS.sub("", analysis[0]), analysis[1])
-            for analysis in self.generator.lookup(f"{word}+{paradigm_template}")
+            for analysis in self.generator.lookup(f"{word}{paradigm_template}")
             if "?" not in analysis[0] and "+Err" not in analysis[0]
         )
 
@@ -70,6 +63,7 @@ class ParadigmGenerator:
     def generate_wordforms(self, word, paradigm_templates):
         """Given a word and pos, generate a paradigm."""
         for paradigm_template in paradigm_templates:
+            print("generate_wordforms", paradigm_template)
             generated_wordforms = list(self.generate(word, paradigm_template))
             if generated_wordforms:
                 yield paradigm_template, generated_wordforms
