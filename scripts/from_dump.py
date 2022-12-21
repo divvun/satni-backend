@@ -356,6 +356,22 @@ def import_sammallahti():
         print("Continuing without Sammallahti's dictionary")
 
 
+def import_smjmed():
+    print(f"Hábmers medicinal smj-nob-smj dictionaries")
+    for xml_file in glob.glob("../medisinsk_ordbok/*.xml"):
+        print(f"\t{os.path.basename(xml_file)}")
+        try:
+            make_entries(parse_xmlfile(xml_file), dictprefix="habmer")
+        except etree.XMLSyntaxError as error:
+            print(
+                "Syntax error in {} "
+                "with the following error:\n{}\n".format(xml_file, error),
+                file=sys.stderr,
+            )
+        except OSError:
+            print(f"Continuing without {xml_file}")
+
+
 def make_stems():
     for stem in STEMS:
         try:
@@ -376,4 +392,5 @@ def run():
     import_sammallahti()
     import_dicts()
     make_m()
+    import_smjmed()
     make_stems()
