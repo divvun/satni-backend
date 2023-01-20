@@ -173,6 +173,24 @@ curl https://satni.uit.no/newsatni/ \
 --data-binary '@hasStem.json'
 ```
 
+## generated
+
+Used to generate wordforms from a paradigm template.
+
+The generator returns a list where each element contains a paradigm template and
+a list of wordforms generated from that paradigm template.
+
+To see an example of the results of this query, download
+[generated.json](generated.json) and run the command:
+
+```bash
+curl https://satni.uit.no/newsatni/ \
+-H 'Content-Type: application/json' \
+-H 'Accept: application/json' \
+--compressed \
+--data-binary '@generated.json'
+```
+
 ## lemmatised
 
 Used to analyse wordforms sent to the lemmatiser.
@@ -184,7 +202,7 @@ wordform.
 The list of lemmatised wordforms can be used to query the dictionaries, the
 analyses can be used to explain the different analyses of the given wordform.
 
-To see and example of the results of this query, download
+To see an example of the results of this query, download
 [lemmatised.json](lemmatised.json) and run the command:
 
 ```bash

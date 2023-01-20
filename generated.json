@@ -1,0 +1,9 @@
+{
+    "operationName": "Generated",
+    "variables": {
+        "origform": "guolli",
+        "language": "sme",
+        "paradigmTemplates": ["+N+Sg+Acc", "+N+Sg+Ill", "+N+Sg+Loc"]
+    },
+    "query": "query Generated($origform: String!, $language: String!, $paradigmTemplates: [String]!) { generated(origform: $origform, language: $language, paradigmTemplates: $paradigmTemplates) { paradigmTemplate analyses { wordform weight } } }"
+}
