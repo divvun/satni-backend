@@ -3,10 +3,11 @@ import strawberry
 import json
 
 
-from main.database import DB
+from main.setup import DB, GENERATORS
 
 from .definitions.dict import Dict, make_dict
 from .definitions.term import TermEntry, make_term_entry
+from .definitions.generator import GeneratorResult, GeneratorAnalysis
 
 
 def make_entry(entry) -> Union[Dict, TermEntry]:
@@ -29,6 +30,25 @@ class Query:
             make_entry(entry)
             for db in DB
             for entry in json.loads(db.entry_list(search_term))
+        ]
+
+    @strawberry.field
+    def generated(
+        self, origform: str, language: str, paradigmTemplates: List[str]
+    ) -> List[GeneratorResult]:
+        return [
+            GeneratorResult(
+                paradigm_template=paradigm_template,
+                analyses=[
+                    GeneratorAnalysis(
+                        wordform=analysis.wordform, weight=analysis.weight
+                    )
+                    for analysis in analyses
+                ],
+            )
+            for paradigm_template, analyses in GENERATORS[language].generate_wordforms(
+                origform, paradigmTemplates
+            )
         ]
 
 

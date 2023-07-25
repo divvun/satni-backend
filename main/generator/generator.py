@@ -17,10 +17,14 @@ class ParadigmGenerator:
 
     def __init__(self, lang):
         """Initialise HFST analysers."""
-        analyser_path = Path("/usr/share/giella") / lang / "analyser-gt-desc.hfstol"
+        analyser_path = (
+            Path("/usr/local/share/giella") / lang / "analyser-gt-desc.hfstol"
+        )
         self.analyser = hfst.HfstInputStream(str(analyser_path)).read()
 
-        generator_path = Path("/usr/share/giella") / lang / "generator-gt-norm.hfstol"
+        generator_path = (
+            Path("/usr/local/share/giella") / lang / "generator-gt-norm.hfstol"
+        )
         self.generator = hfst.HfstInputStream(str(generator_path)).read()
         self.lang = lang
 
