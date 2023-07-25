@@ -1,31 +1,28 @@
-from mongoengine import Document, EmbeddedDocument
-from mongoengine.fields import (
-    BooleanField,
-    EmbeddedDocumentField,
-    ListField,
-    ReferenceField,
-    StringField,
-)
+from typing import List, Optional
+import strawberry
 
-from lemmas.models import Lemma
+from lemma import Lemma
 
 
-class Term(EmbeddedDocument):
-    status = StringField(blank=True, null=True)
-    sanctioned = BooleanField(default=False)
-    note = StringField(blank=True, null=True)
-    source = StringField(blank=True, null=True)
-    expression = ReferenceField(Lemma, required=True)
+@strawberry
+class Term:
+    status: Optional[str]
+    sanctioned: bool
+    note: Optional[str]
+    source: Optional[str]
+    expression: Lemma
 
 
-class Concept(Document):
-    meta = {"collection": "terms"}
-    name = StringField(required=True)
-    language = StringField(required=True)
-    definition = StringField(blank=True, null=True)
-    explanation = StringField(blank=True, null=True)
-    terms = ListField(EmbeddedDocumentField(Term), required=True)
-    collections = ListField(StringField())
+@strawberry
+class Concept:
+    language: str
+    definition: Optional[str]
+    explanation: Optional[str]
+    terms: List[Term]
 
-    def __str__(self):
-        return "%s: %s" % (self.name, self.language)
+
+@strawberry
+class TermEntry:
+    name: str
+    collections: Optional[List[str]]
+    concepts: List[Concept]

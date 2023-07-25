@@ -11,6 +11,7 @@ lxml = "4.9.3"
 termwikiimporter = {path = "../../langtech/tools/TermWikiImporter"}
 strawberry-graphql = {extras = ["fastapi"], version = "^0.195.3"}
 satni-back-python = {path = "../satni-back-rust/satni-back-python"}
+uvicorn = {extras = ["standard"], version = "^0.23.1"}
 
 [tool.poetry.dev-dependencies]
 pylint = "2.6.0"
