@@ -3,11 +3,12 @@ import strawberry
 import json
 
 
-from main.setup import DB, GENERATORS
+from main.setup import DB, GENERATORS, LEMMATISERS
 
 from .definitions.dict import Dict, make_dict
 from .definitions.term import TermEntry, make_term_entry
 from .definitions.generator import GeneratorResult, GeneratorAnalysis
+from .definitions.lemmatiser import LemmatiserResult, LemmatiserAnalysis
 
 
 def make_entry(entry) -> Union[Dict, TermEntry]:
@@ -49,6 +50,25 @@ class Query:
             for paradigm_template, analyses in GENERATORS[language].generate_wordforms(
                 origform, paradigmTemplates
             )
+        ]
+
+    @strawberry.field
+    def lemmatised(self, lookup_string: str) -> List[LemmatiserResult]:
+        """Lemmatise lookup_string."""
+        return [
+            LemmatiserResult(
+                language=lang,
+                wordforms=[
+                    wordform for wordform in LEMMATISERS[lang].lemmatise(lookup_string)
+                ],
+                analyses=[
+                    LemmatiserAnalysis(
+                        analysis=analysis.analysis, weight=analysis.weight
+                    )
+                    for analysis in LEMMATISERS[lang].analyse(lookup_string)
+                ],
+            )
+            for lang in LEMMATISERS
         ]
 
 

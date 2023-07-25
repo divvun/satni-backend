@@ -17,7 +17,7 @@ class Lemmatiser:
 
     def __init__(self, lang):
         """Initialise HFST analysers."""
-        path = Path("/usr/share/giella") / lang
+        path = Path("/usr/local/share/giella") / lang
         self.analyser = hfst.HfstInputStream(
             str(path / "analyser-gt-desc.hfstol")
         ).read()
