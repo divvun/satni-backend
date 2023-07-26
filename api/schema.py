@@ -1,5 +1,4 @@
 import json
-from typing import List, Union
 
 import strawberry
 
@@ -11,7 +10,7 @@ from .definitions.lemmatiser import LemmatiserAnalysis, LemmatiserResult
 from .definitions.term import TermEntry, make_term_entry
 
 
-def make_entry(entry) -> Union[Dict, TermEntry]:
+def make_entry(entry) -> Dict | TermEntry:
     return (
         make_dict(entry.get("Dict"))
         if entry.get("Dict")
@@ -22,11 +21,11 @@ def make_entry(entry) -> Union[Dict, TermEntry]:
 @strawberry.type
 class Query:
     @strawberry.field
-    def list_lemmas(self, search_term: str) -> List[str]:
+    def list_lemmas(self, search_term: str) -> list[str]:
         return [answer for db in DB for answer in db.list_lemmas(search_term)]
 
     @strawberry.field
-    def entry_list(self, search_term: str) -> List[Union[Dict, TermEntry]]:
+    def entry_list(self, search_term: str) -> list[Dict | TermEntry]:
         return [
             make_entry(entry)
             for db in DB
@@ -35,8 +34,8 @@ class Query:
 
     @strawberry.field
     def generated(
-        self, origform: str, language: str, paradigmTemplates: List[str]
-    ) -> List[GeneratorResult]:
+        self, origform: str, language: str, paradigmTemplates: list[str]
+    ) -> list[GeneratorResult]:
         return [
             GeneratorResult(
                 paradigm_template=paradigm_template,
@@ -53,7 +52,7 @@ class Query:
         ]
 
     @strawberry.field
-    def lemmatised(self, lookup_string: str) -> List[LemmatiserResult]:
+    def lemmatised(self, lookup_string: str) -> list[LemmatiserResult]:
         """Lemmatise lookup_string."""
         return [
             LemmatiserResult(

@@ -1,4 +1,3 @@
-from typing import List, Optional
 
 import strawberry
 
@@ -7,26 +6,26 @@ from .lemma import Lemma
 
 @strawberry.type
 class Term:
-    status: Optional[str]
+    status: str | None
     sanctioned: bool
-    note: Optional[str]
-    source: Optional[str]
+    note: str | None
+    source: str | None
     expression: Lemma
 
 
 @strawberry.type
 class Concept:
     language: str
-    definition: Optional[str]
-    explanation: Optional[str]
-    terms: List[Term]
+    definition: str | None
+    explanation: str | None
+    terms: list[Term]
 
 
 @strawberry.type
 class TermEntry:
     name: str
-    collections: Optional[List[str]]
-    concepts: List[Concept]
+    collections: list[str] | None
+    concepts: list[Concept]
 
 
 def make_term(term):

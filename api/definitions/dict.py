@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 import strawberry
 
@@ -7,13 +7,13 @@ from .lemma import Lemma
 
 @strawberry.type
 class Algu:
-    lexeme_id: Optional[str]
+    lexeme_id: str | None
     word_id: str
 
 
 @strawberry.type
 class LemmaGroup:
-    lemmas: List[Lemma]
+    lemmas: list[Lemma]
     algu: Algu
 
 
@@ -45,20 +45,20 @@ class ExampleGroup:
 
 @strawberry.type
 class TranslationGroup:
-    restriction: Optional[Restriction]
-    translations: List[Translation]
-    example_groups: Optional[List[ExampleGroup]]
+    restriction: Restriction | None
+    translations: list[Translation]
+    example_groups: list[ExampleGroup] | None
 
 
 @strawberry.type
 class MeaningGroup:
-    translation_groups: List[TranslationGroup]
+    translation_groups: list[TranslationGroup]
 
 
 @strawberry.type
 class Dict:
     lemma_group: LemmaGroup
-    meaning_groups: List[MeaningGroup]
+    meaning_groups: list[MeaningGroup]
 
 
 def make_lemmas(content):

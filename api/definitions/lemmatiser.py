@@ -1,4 +1,3 @@
-from typing import List
 
 import strawberry
 
@@ -16,5 +15,5 @@ class LemmatiserResult:
     """Results for all languages."""
 
     language: str
-    wordforms: List[str]
-    analyses: List[LemmatiserAnalysis]
+    wordforms: list[str]
+    analyses: list[LemmatiserAnalysis]

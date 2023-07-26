@@ -1,4 +1,3 @@
-from typing import List
 
 import strawberry
 
@@ -16,4 +15,4 @@ class GeneratorResult:
     """The result of the generation of one paradigm template."""
 
     paradigm_template: str
-    analyses: List[GeneratorAnalysis]
+    analyses: list[GeneratorAnalysis]
