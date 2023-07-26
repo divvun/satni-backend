@@ -2,9 +2,8 @@
 
 import unittest
 
-from nose2.tools import params
-
 from generator.generator import ParadigmGenerator
+from nose2.tools import params
 
 
 class TestParadigmGenerator(unittest.TestCase):

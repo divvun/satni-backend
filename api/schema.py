@@ -1,14 +1,14 @@
-from typing import List, Union
-import strawberry
 import json
+from typing import List, Union
 
+import strawberry
 
 from main.setup import DB, GENERATORS, LEMMATISERS
 
 from .definitions.dict import Dict, make_dict
+from .definitions.generator import GeneratorAnalysis, GeneratorResult
+from .definitions.lemmatiser import LemmatiserAnalysis, LemmatiserResult
 from .definitions.term import TermEntry, make_term_entry
-from .definitions.generator import GeneratorResult, GeneratorAnalysis
-from .definitions.lemmatiser import LemmatiserResult, LemmatiserAnalysis
 
 
 def make_entry(entry) -> Union[Dict, TermEntry]:

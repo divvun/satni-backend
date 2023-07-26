@@ -1,8 +1,10 @@
-from satni_back_python import SatniDictDB, SatniTermDB
 from os import getenv
+from pathlib import Path
+
+from satni_back_python import SatniDictDB, SatniTermDB
+
 from .generator.generator import ParadigmGenerator
 from .lemmatiser.lemmatiser import lemmatiser
-from pathlib import Path
 
 DB = [
     SatniDictDB(f"{getenv('GTHOME')}/words/dicts/{pair}/src/")
