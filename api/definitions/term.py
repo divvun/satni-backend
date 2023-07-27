@@ -1,4 +1,3 @@
-
 import strawberry
 
 from .lemma import Lemma
@@ -50,9 +49,13 @@ def make_concept(concept):
     )
 
 
-def make_term_entry(entry):
+def make_term_entry(entry, langs):
     return TermEntry(
         name=entry.get("name"),
         collections=None,
-        concepts=[make_concept(concept) for concept in entry.get("concepts")],
+        concepts=[
+            make_concept(concept)
+            for concept in entry.get("concepts")
+            if concept.get("language") in langs
+        ],
     )
