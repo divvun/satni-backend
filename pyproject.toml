@@ -24,6 +24,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 select = [
+  "F",   # pyflakes
   "I",   # isort
   "UP",  # pyupgrade
 ]
