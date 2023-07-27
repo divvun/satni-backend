@@ -92,7 +92,9 @@ def is_wanted_db(search_filter: SearchFilter, db: SatniDictDB | SatniTermDB) -> 
 
 @strawberry.type
 class Query:
-    @strawberry.field
+    @strawberry.field(
+        description="Paginated list of lemmas containing the search string"
+    )
     def list_lemmas(
         self, search_filter: SearchFilter, first: int = 50, after: str | None = None
     ) -> Connection[str]:
@@ -139,7 +141,9 @@ class Query:
             ),
         )
 
-    @strawberry.field
+    @strawberry.field(
+        description="Term and dictionary articles containing the search term"
+    )
     def entry_list(self, search_filter: SearchFilter) -> list[Dict | TermEntry]:
         def is_valid_entry(entry):
             return isinstance(entry, Dict) or (
@@ -167,7 +171,9 @@ class Query:
             if is_valid_entry(final_entry)
         ]
 
-    @strawberry.field
+    @strawberry.field(
+        description="Generate inflected wordforms for a given lemma and language"
+    )
     def generated(
         self, origform: str, language: str, paradigmTemplates: list[str]
     ) -> list[GeneratorResult]:
@@ -186,7 +192,7 @@ class Query:
             )
         ]
 
-    @strawberry.field
+    @strawberry.field(description="Lemmatise the given wordform")
     def lemmatised(self, lookup_string: str) -> list[LemmatiserResult]:
         """Lemmatise lookup_string."""
         return [
