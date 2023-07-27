@@ -1,4 +1,6 @@
 import json
+from base64 import b64decode, b64encode
+from typing import Generic, TypeVar, cast
 
 import strawberry
 from satni_back_python import SatniDictDB, SatniTermDB
@@ -10,6 +12,65 @@ from .definitions.generator import GeneratorAnalysis, GeneratorResult
 from .definitions.lemmatiser import LemmatiserAnalysis, LemmatiserResult
 from .definitions.search_filter import SearchFilter
 from .definitions.term import TermEntry, make_term_entry
+
+
+def encode_lemma_cursor(position: int) -> str:
+    """
+    Encodes the given lemma position into a cursor.
+
+    :param position: The lemma position to encode.
+
+    :return: The encoded cursor.
+    """
+    return b64encode(f"user:{position}".encode("ascii")).decode("ascii")
+
+
+def decode_lemma_cursor(cursor: str) -> int:
+    """
+    Decodes the lemma position from the given cursor.
+
+    :param cursor: The cursor to decode.
+
+    :return: The decoded lemma position.
+    """
+    cursor_data = b64decode(cursor.encode("ascii")).decode("ascii")
+    return int(cursor_data.split(":")[1])
+
+
+GenericType = TypeVar("GenericType")
+
+
+@strawberry.type
+class Edge(Generic[GenericType]):
+    node: GenericType = strawberry.field(description="The item at the end of the edge.")
+    cursor: str = strawberry.field(description="A cursor for use in pagination.")
+
+
+@strawberry.type
+class Connection(Generic[GenericType]):
+    page_info: "PageInfo" = strawberry.field(
+        description="Information to aid in pagination."
+    )
+    edges: list["Edge[GenericType]"] = strawberry.field(
+        description="A list of edges in this connection."
+    )
+    total_count: int = strawberry.field(description="Total found items")
+
+
+@strawberry.type
+class PageInfo:
+    has_next_page: bool = strawberry.field(
+        description="When paginating forwards, are there more items?"
+    )
+    has_previous_page: bool = strawberry.field(
+        description="When paginating backwards, are there more items?"
+    )
+    start_cursor: str | None = strawberry.field(
+        description="When paginating backwards, the cursor to continue."
+    )
+    end_cursor: str | None = strawberry.field(
+        description="When paginating forwards, the cursor to continue."
+    )
 
 
 def make_entry(entry, langs) -> Dict | TermEntry:
@@ -32,13 +93,51 @@ def is_wanted_db(search_filter: SearchFilter, db: SatniDictDB | SatniTermDB) -> 
 @strawberry.type
 class Query:
     @strawberry.field
-    def list_lemmas(self, search_filter: SearchFilter) -> list[str]:
-        return [
+    def list_lemmas(
+        self, search_filter: SearchFilter, first: int = 50, after: str | None = None
+    ) -> Connection[str]:
+        all_lemmas = [
             answer
             for db in DB
             if is_wanted_db(search_filter=search_filter, db=db)
             for answer in db.list_lemmas(search_filter.search_term)
         ]
+
+        first_position = (
+            decode_lemma_cursor(cursor=after) + 1 if after is not None else 0
+        )
+        current_last = first_position + first
+        sliced_lemmas = all_lemmas[first_position:current_last]
+
+        has_next_page = len(sliced_lemmas) >= first
+        has_previous_page = first_position > 0
+
+        edges = [
+            Edge(
+                node=cast(str, lemma),
+                cursor=encode_lemma_cursor(position=first_position + index),
+            )
+            for (index, lemma) in enumerate(sliced_lemmas)
+        ]
+
+        if edges:
+            start_cursor = edges[0].cursor
+        else:
+            start_cursor = None
+
+        if len(edges) > 1:
+            end_cursor = edges[-1].cursor
+
+        return Connection(
+            total_count=len(all_lemmas),
+            edges=edges,
+            page_info=PageInfo(
+                has_next_page=has_next_page,
+                has_previous_page=has_previous_page,
+                start_cursor=start_cursor,
+                end_cursor=end_cursor,
+            ),
+        )
 
     @strawberry.field
     def entry_list(self, search_filter: SearchFilter) -> list[Dict | TermEntry]:
