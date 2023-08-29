@@ -1,8 +1,5 @@
 import json
-import os
 from collections import Counter, defaultdict, namedtuple
-
-from lxml import etree
 
 from generator.generator import ParadigmGenerator
 from lemmatiser.lemmatiser import Lemmatiser

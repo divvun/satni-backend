@@ -4,14 +4,14 @@ import os
 import re
 import sys
 
-from lxml import etree
-from mongoengine.errors import ValidationError
-from termwikiimporter import bot
-
 from dicts.models import DictEntry, ExampleGroup, Restriction, TranslationGroup
 from lemmas.models import Lemma
-from stems.models import Stem
+from lxml import etree
+from mongoengine.errors import ValidationError
 from terms.models import Concept, Term
+from termwikiimporter import bot
+
+from stems.models import Stem
 
 REMOVER_RE = r'[ꞌ|@ˣ."*]'
 """Remove these characters from Sammallahti's original lemmas."""
@@ -341,15 +341,15 @@ def parse_xmlfile(xml_file):
 
 
 def import_sammallahti():
-    print(f"Pekka Sammallahtis sme-fin dictionary")
+    print("Pekka Sammallahtis sme-fin dictionary")
     xml_file = os.path.join("../sammallahti/sammallahti.xml")
     try:
         print(f"\t{os.path.basename(xml_file)}")
         make_entries(parse_xmlfile(xml_file), dictprefix="sammallahti")
     except etree.XMLSyntaxError as error:
         print(
-            "Syntax error in {} "
-            "with the following error:\n{}\n".format(xml_file, error),
+            f"Syntax error in {xml_file} "
+            f"with the following error:\n{error}\n",
             file=sys.stderr,
         )
     except OSError:
@@ -357,15 +357,15 @@ def import_sammallahti():
 
 
 def import_smjmed():
-    print(f"Hábmers medicinal smj-nob-smj dictionaries")
+    print("Hábmers medicinal smj-nob-smj dictionaries")
     for xml_file in glob.glob("../medisinsk_ordbok/*.xml"):
         print(f"\t{os.path.basename(xml_file)}")
         try:
             make_entries(parse_xmlfile(xml_file), dictprefix="habmer")
         except etree.XMLSyntaxError as error:
             print(
-                "Syntax error in {} "
-                "with the following error:\n{}\n".format(xml_file, error),
+                f"Syntax error in {xml_file} "
+                f"with the following error:\n{error}\n",
                 file=sys.stderr,
             )
         except OSError:
