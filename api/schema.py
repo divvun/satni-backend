@@ -98,6 +98,7 @@ class Query:
     def list_lemmas(
         self, search_filter: SearchFilter, first: int = 50, after: str | None = None
     ) -> Connection[str]:
+
         all_lemmas = [
             answer
             for db in DB
@@ -127,8 +128,7 @@ class Query:
         else:
             start_cursor = None
 
-        if len(edges) > 1:
-            end_cursor = edges[-1].cursor
+        end_cursor = edges[-1].cursor if len(edges) > 1 else None
 
         return Connection(
             total_count=len(all_lemmas),
