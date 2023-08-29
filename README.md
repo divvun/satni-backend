@@ -1,3 +1,5 @@
+uvicorn main:app --reload
+
 This is a [Django](https://www.djangoproject.com/) backend for
 [sátni.org](http://sátni.org) that uses [Mongodb](https://www.mongodb.com/) to
 serve a GraphQL-endpoint to the
@@ -8,21 +10,21 @@ Mac, the needed fsts must be compiled and installed from source.
 
 # Prerequisites
 
-* Install and setup mongodb
-* Install
+- Install and setup mongodb
+- Install
   [apertium-nightly](https://wiki.apertium.org/wiki/Install_Apertium_core_using_packaging)
-  * Install the packages giella-fin, giella-nob, giella-sma, giella-sme,
+  - Install the packages giella-fin, giella-nob, giella-sma, giella-sme,
     giella-smj, giella-smn, giella-sms, python3-hfst
-* Checkout the langtech svn repo parallel to this one
+- Checkout the langtech svn repo parallel to this one
   (`svn checkout https://gtsvn.uit.no/langtech/trunk langtech`)
-* Set the environment variable GTHOME to point to the working copy of langtech
-* Fetch [poetry](https://python-poetry.org/docs/#installation)
+- Set the environment variable GTHOME to point to the working copy of langtech
+- Fetch [poetry](https://python-poetry.org/docs/#installation)
 
 # Initial setup
 
-* cp .env.example to .env
-* set the app secret (follow the link in .env)
-* set the mongodb username and password
+- cp .env.example to .env
+- set the app secret (follow the link in .env)
+- set the mongodb username and password
 
 ```bash
 poetry install # install dependencies
@@ -235,23 +237,23 @@ root of the home directory, as well. Do all the other steps as described in the
 
 Move into the satni-backend directory, then run these commands:
 
-* `loginctl enable-linger`. This allows users who are not logged in
+- `loginctl enable-linger`. This allows users who are not logged in
   [to run long-running services](https://www.freedesktop.org/software/systemd/man/loginctl.html)
-* `mkdir -p ~/.config/systemd/user/`
-* `cp satni.service.example ~/.config/systemd/user/satni.service`
-* `poetry shell`
-* `which gunicorn`
+- `mkdir -p ~/.config/systemd/user/`
+- `cp satni.service.example ~/.config/systemd/user/satni.service`
+- `poetry shell`
+- `which gunicorn`
 
 Edit `~/.config/systemd/user/satni.service`, replace `virtualenv-path/gunicorn`
 with the result you got from `which gunicorn`
 
 ## Managing the service
 
-* systemctl --user start satni
-* systemctl --user stop satni
-* systemctl --user restart satni
+- systemctl --user start satni
+- systemctl --user stop satni
+- systemctl --user restart satni
 
 Checking the status
 
-* systemctl --user status satni
-* journalctl --user-unit satni
+- systemctl --user status satni
+- journalctl --user-unit satni
