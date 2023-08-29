@@ -12,6 +12,9 @@ termwikiimporter = {path = "../../langtech/tools/TermWikiImporter"}
 strawberry-graphql = {extras = ["fastapi"], version = "^0.195.3"}
 satni-back-python = {path = "../satni-back-rust/satni-back-python"}
 uvicorn = {extras = ["standard"], version = "^0.23.1"}
+rich = "^13.4.2"
+typer = "^0.9.0"
+libcst = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.280"
