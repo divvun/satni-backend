@@ -1,6 +1,7 @@
 {
   "operationName": "HasStem",
   "variables": {
+    "srcLangs": ["sme"],
     "stem": "biila",
     "targetLangs": [
       "sme",
@@ -30,5 +31,5 @@
       "gtsmnfin"
     ]
   },
-  "query": "query HasStem($stem: String!, $targetLangs: [String]!,  $wantedDicts: [String]!) { hasStem(exact: $stem targetLangs: $targetLangs wantedDicts: $wantedDicts) { stem } }"
+  "query": "query HasStem($srcLangs:[String]!, $stem: String!, $targetLangs: [String]!,  $wantedDicts: [String]!) { hasStem(srcLangs: $srcLangs exact: $stem targetLangs: $targetLangs wantedDicts: $wantedDicts) { stem } }"
 }
