@@ -2,6 +2,7 @@
   "operationName": "AllLemmas",
   "variables": {
     "inputValue": "arg",
+    "searchMode": "start",
     "srcLangs": [
       "sme",
       "smj",
