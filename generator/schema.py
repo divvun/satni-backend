@@ -4,9 +4,10 @@ import graphene
 from .generator import ParadigmGenerator
 from .types import GeneratorResultType
 
+GENERATOR_LANGS = ["fin", "sma", "sme", "smj", "smn", "sms"]
 GENERATORS = {
     language: ParadigmGenerator(language)
-    for language in ["fin", "sma", "sme", "smj", "smn", "sms", "nob"]
+    for language in GENERATOR_LANGS
 }
 
 
@@ -23,6 +24,10 @@ class Query(graphene.ObjectType):
     def resolve_generated(self, info, origform, language, paradigmTemplates):
         """Generate wordforms."""
         print("generator schema", origform, language, paradigmTemplates)
+
+        if language not in GENERATOR_LANGS:
+            return []
+        
         return [
             {
                 "paradigm_template": paradigm_template,
