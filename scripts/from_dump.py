@@ -185,7 +185,7 @@ def make_dict_lemma(element, lang, dictprefix):
     normalised_lemma = normalise_lemma(element.text)
     lemma = (
         sammallahti_replacer(normalised_lemma)
-        if dictprefix == "ps"
+        if dictprefix == "sammallahti"
         else normalised_lemma
     )
     presentation_lemma = normalised_lemma
@@ -269,14 +269,14 @@ def add_dictentry_to_stems(dict_entry, dictprefix, src, target):
     for lookup_lemma in dict_entry.lookupLemmas:
         add_to_stems(
             sammallahti_replacer(lookup_lemma.lemma)
-            if dictprefix == "ps"
+            if dictprefix == "sammallahti"
             else lookup_lemma.lemma,
             dictprefix,
             src,
             target,
         )
 
-    if dictprefix == "ps":
+    if dictprefix == "sammallahti":
         for translation_group in dict_entry.translationGroups:
             for translation_lemma in translation_group.translationLemmas:
                 add_to_stems(
