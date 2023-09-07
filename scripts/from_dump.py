@@ -151,8 +151,11 @@ def make_m():
             make_concepts(title, concept, valid_langs)
 
 
-def make_empty_stem(lemma):
-    STEMS[lemma] = {key: set() for key in ["fromlangs", "tolangs", "dicts"]}
+def get_stem(lemma):
+    if STEMS.get(lemma) is None:
+        STEMS[lemma] = {key: set() for key in ["fromlangs", "tolangs", "dicts"]}
+
+    return STEMS[lemma]
 
 
 def extract_term_stems(concept, valid_langs):
@@ -161,7 +164,7 @@ def extract_term_stems(concept, valid_langs):
             lang, concept.related_expressions
         ):
             lemma = expression["expression"]
-            stem = STEMS.get(lemma, make_empty_stem(lemma))
+            stem = get_stem(lemma)
 
             stem["dicts"].add("termwiki")
             stem["fromlangs"].add(LANGS[lang])
@@ -257,7 +260,7 @@ def make_translation_groups(translation_groups, target, dictprefix):
 
 def add_to_stems(lemma, dictname, src, target):
     if "(+" not in lemma:
-        stem = STEMS.get(lemma, make_empty_stem(lemma))
+        stem = get_stem(lemma)
         stem["dicts"].add(f"{dictname}{src}{target}")
         stem["fromlangs"].add(src)
         stem["tolangs"].add(target)
