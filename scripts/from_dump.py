@@ -181,9 +181,13 @@ def normalise_lemma(lemma: str) -> str:
     return lemma
 
 
-def make_dict_lemma(element, lang):
+def make_dict_lemma(element, lang, dictprefix):
     normalised_lemma = normalise_lemma(element.text)
-    lemma = sammallahti_replacer(normalised_lemma)
+    lemma = (
+        sammallahti_replacer(normalised_lemma)
+        if dictprefix == "ps"
+        else normalised_lemma
+    )
     presentation_lemma = normalised_lemma
 
     lemma_key = f"{lemma}{presentation_lemma}" f"{element.get('pos')}{lang}"
@@ -202,9 +206,9 @@ def make_dict_lemma(element, lang):
     return LEMMAS[lemma_key]
 
 
-def make_lemmas(translations, target):
+def make_lemmas(translations, target, dictprefix):
     return [
-        make_dict_lemma(translation, target)
+        make_dict_lemma(translation, target, dictprefix)
         for translation in translations
         if translation.text is not None
     ]
@@ -233,17 +237,19 @@ def make_examples(examples):
     return [make_example(example) for example in examples if len(example)]
 
 
-def make_translation_group(translation_group, target):
+def make_translation_group(translation_group, target, dictprefix):
     return TranslationGroup(
-        translationLemmas=make_lemmas(translation_group.xpath("./t"), target),
+        translationLemmas=make_lemmas(
+            translation_group.xpath("./t"), target, dictprefix
+        ),
         restriction=make_restriction(translation_group),
         exampleGroups=make_examples(translation_group.xpath("./xg")),
     )
 
 
-def make_translation_groups(translation_groups, target):
+def make_translation_groups(translation_groups, target, dictprefix):
     return [
-        make_translation_group(translation_group, target)
+        make_translation_group(translation_group, target, dictprefix)
         for translation_group in translation_groups
         if translation_group.get("{http://www.w3.org/XML/1998/namespace}lang") == target
     ]
@@ -292,8 +298,10 @@ def make_dict_entries(dictxml, dictprefix, src, target):
                 dictName=f"{dictprefix}{src}{target}",
                 srcLang=src,
                 targetLang=target,
-                lookupLemmas=make_lemmas(entry.xpath(".//l"), src),
-                translationGroups=make_translation_groups(entry.xpath(".//tg"), target),
+                lookupLemmas=make_lemmas(entry.xpath(".//l"), src, dictprefix),
+                translationGroups=make_translation_groups(
+                    entry.xpath(".//tg"), target, dictprefix
+                ),
             )
             try:
                 dict_entry.save()
@@ -341,7 +349,7 @@ def parse_xmlfile(xml_file):
 
 
 def import_sammallahti():
-    print(f"Pekka Sammallahtis sme-fin dictionary")
+    print("Pekka Sammallahtis sme-fin dictionary")
     xml_file = os.path.join("../sammallahti/sammallahti.xml")
     try:
         print(f"\t{os.path.basename(xml_file)}")
@@ -357,7 +365,7 @@ def import_sammallahti():
 
 
 def import_smjmed():
-    print(f"Hábmers medicinal smj-nob-smj dictionaries")
+    print("Hábmers medicinal smj-nob-smj dictionaries")
     for xml_file in glob.glob("../medisinsk_ordbok/*.xml"):
         print(f"\t{os.path.basename(xml_file)}")
         try:
