@@ -33,19 +33,19 @@ LANGS = {
 }
 
 DICTS = [
-    "smenob",
-    "nobsme",
-    "nobsma",
-    "smanob",
-    "smefin",
-    "finsme",
-    "smesmn",
-    "smnsme",
-    "finsmn",
-    "smnfin",
-    "finnob",
-    "smesma",
-    "smasme"
+    "sme-nob",
+    "nob-sme",
+    "nob-sma",
+    "sma-nob",
+    "sme-fin",
+    "fin-sme",
+    "sme-smn",
+    "smn-sme",
+    "fin-smn",
+    "smn-fin",
+    "fin-nob",
+    "sme-sma",
+    "sma-sme"
     # uncomment these to do generation coverage
     # "smesmj",
     # "smjnob",
@@ -339,7 +339,8 @@ def dict_paths():
         xml_file
         for pair in DICTS
         for xml_file in glob.glob(
-            os.path.join(os.getenv("GTHOME"), "words/dicts", pair, "src") + "/*.xml"
+            os.path.join(os.getenv("GUTHOME"), "giellalt", f"dict-{pair}", "src")
+            + "/*.xml"
         )
         if not xml_file.endswith("meta.xml") and "Der_" not in xml_file
     ]
@@ -357,7 +358,13 @@ def parse_xmlfile(xml_file):
 
 def import_sammallahti():
     print("Pekka Sammallahtis sme-fin dictionary")
-    xml_file = os.path.join("../sammallahti/sammallahti.xml")
+    xml_file = os.path.join(
+        os.getenv("GUTHOME"),
+        "giellalt",
+        "dict-sme-fin-x-sammallahti",
+        "src",
+        "sammallahti.xml",
+    )
     try:
         print(f"\t{os.path.basename(xml_file)}")
         make_entries(parse_xmlfile(xml_file), dictprefix="sammallahti")
@@ -373,7 +380,10 @@ def import_sammallahti():
 
 def import_smjmed():
     print("Hábmers medicinal smj-nob-smj dictionaries")
-    for xml_file in glob.glob("../medisinsk_ordbok/*.xml"):
+    habmer_home = os.path.join(
+        os.getenv("GUTHOME"), "giellalt", "dict-smj-nob-x-habmer"
+    )
+    for xml_file in glob.glob(f"{habmer_home}/*.xml"):
         print(f"\t{os.path.basename(xml_file)}")
         try:
             make_entries(parse_xmlfile(xml_file), dictprefix="habmer")
