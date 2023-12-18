@@ -6,7 +6,7 @@ import sys
 
 from lxml import etree
 from mongoengine.errors import ValidationError
-from termwikiimporter import bot
+from termwikitools import dumphandler
 
 from dicts.models import DictEntry, ExampleGroup, Restriction, TranslationGroup
 from lemmas.models import Lemma
@@ -67,12 +67,12 @@ def sammallahti_replacer(line):
 
 
 def make_lemma(lang, expression):
-    lemma_key = f"{expression['expression']}{expression['pos']}{LANGS[lang]}"
+    lemma_key = f"{expression.expression}{expression.pos}{LANGS[lang]}"
     if not LEMMAS.get(lemma_key):
         lemma = Lemma(
-            lemma=expression["expression"],
-            presentation_lemma=expression["expression"],
-            pos=expression["pos"],
+            lemma=expression.expression,
+            presentation_lemma=expression.expression,
+            pos=expression.pos,
             language=LANGS[lang],
             dialect=None,
             country=None,
@@ -89,66 +89,70 @@ def make_terms(lang, concept):
         lang, concept.related_expressions
     ):
         term = Term(
-            status=expression.get("status"),
-            sanctioned=expression.get("sanctioned", False),
-            note=expression.get("note"),
-            source=expression.get("source"),
+            status=expression.status,
+            sanctioned=expression.sanctioned,
+            note=expression.note,
+            source=expression.source,
             expression=make_lemma(lang, expression),
         )
         yield term
 
 
-def get_definition(lang, concept):
+def get_definition(lang, termwiki_concept):
     """Find the definition"""
-    for concept_info in concept.data["concept_infos"]:
-        if lang == concept_info["language"]:
-            return concept_info.get("definition")
+    if termwiki_concept.concept_infos is not None:
+        for concept_info in termwiki_concept.concept_infos:
+            if lang == concept_info.language:
+                return concept_info.definition
 
 
-def get_explanation(lang, concept):
+def get_explanation(lang, termwiki_concept):
     """Find the explanatiion."""
-    for concept_info in concept.data["concept_infos"]:
-        if lang == concept_info["language"]:
-            return concept_info.get("explanation")
+    if termwiki_concept.concept_infos is not None:
+        for concept_info in termwiki_concept.concept_infos:
+            if lang == concept_info.language:
+                return concept_info.explanation
 
 
 def same_lang_sanctioned_expressions(lang, expressions):
     return [
         expression
         for expression in expressions
-        if expression["language"] == lang and expression["sanctioned"] == "True"
+        if expression.language == lang and expression.sanctioned == "True"
     ]
 
 
-def get_valid_langs(concept):
+def get_valid_langs(termwiki_concept):
     return {
-        lang
-        for lang in concept.languages()
-        if same_lang_sanctioned_expressions(lang, concept.related_expressions)
+        related_expression.language
+        for related_expression in termwiki_concept.related_expressions
+        if related_expression.sanctioned == "True"
     }
 
 
-def make_concepts(title, concept, valid_langs):
+def make_concepts(title, termwiki_concept, valid_langs):
     for lang in valid_langs:
         c = Concept(
             name=f"{title}",
             language=lang,
-            definition=get_definition(lang, concept),
-            explanation=get_explanation(lang, concept),
-            terms=make_terms(lang, concept),
-            collections=[collection for collection in concept.collections],
+            definition=get_definition(lang, termwiki_concept),
+            explanation=get_explanation(lang, termwiki_concept),
+            terms=make_terms(lang, termwiki_concept),
+            collections=list(termwiki_concept.concept.collection)
+            if termwiki_concept.concept.collection is not None
+            else set(),
         )
         c.save()
 
 
 def make_m():
     print("Importing TermWiki content")
-    dumphandler = bot.DumpHandler()
-    for (title, concept) in dumphandler.concepts:
-        if concept.has_sanctioned_sami():
-            valid_langs = get_valid_langs(concept)
-            extract_term_stems(concept, valid_langs)
-            make_concepts(title, concept, valid_langs)
+    dumper = dumphandler.DumpHandler()
+    for (title, termwiki_concept) in dumper.concepts:
+        if termwiki_concept.has_sanctioned_sami():
+            valid_langs = get_valid_langs(termwiki_concept)
+            extract_term_stems(termwiki_concept, valid_langs)
+            make_concepts(title, termwiki_concept, valid_langs)
 
 
 def get_stem(lemma):
@@ -163,7 +167,7 @@ def extract_term_stems(concept, valid_langs):
         for expression in same_lang_sanctioned_expressions(
             lang, concept.related_expressions
         ):
-            lemma = expression["expression"]
+            lemma = expression.expression
             stem = get_stem(lemma)
 
             stem["dicts"].add("termwiki")
