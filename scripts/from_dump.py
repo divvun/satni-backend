@@ -149,7 +149,7 @@ def make_concepts(title, termwiki_concept, valid_langs):
 def make_m():
     print("Importing TermWiki content")
     dumper = dumphandler.DumpHandler()
-    for (title, termwiki_concept) in dumper.concepts:
+    for title, termwiki_concept in dumper.concepts:
         if termwiki_concept.has_sanctioned_sami():
             valid_langs = get_valid_langs(termwiki_concept)
             extract_term_stems(termwiki_concept, valid_langs)
