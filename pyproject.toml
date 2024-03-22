@@ -28,7 +28,6 @@ idna = "2.10"
 iso8601 = "0.1.12"
 jdcal = "1.4.1"
 lazy-object-proxy = "1.4.3"
-lxml = "4.6.3"
 mongoengine = "0.20.0"
 mwclient = "0.10.1"
 oauthlib = "3.1.0"
@@ -50,6 +49,7 @@ urllib3 = "1.25.10"
 wrapt = "1.12.1"
 termwikitools = {git = "https://github.com/divvun/TermWikiTools"}
 gunicorn = "^20.0.4"
+lxml = "^5.1.0"
 
 [tool.poetry.dev-dependencies]
 pylint = "2.6.0"
