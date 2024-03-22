@@ -234,14 +234,22 @@ def make_restriction(translation_group):
         return Restriction(restriction=t_element.get("reg"), attributes="")
 
 
-def make_example(example):
-    return ExampleGroup(
-        example=example.find("./x").text, translation=example.find("./xt").text
-    )
+def make_example(example, target):
+    translation_element = example.find("./xt")
+    if (
+        translation_element.get("{http://www.w3.org/XML/1998/namespace}lang") is None
+    ) or (
+        translation_element.get("{http://www.w3.org/XML/1998/namespace}lang") == target
+    ):
+        return ExampleGroup(
+            example=example.find("./x").text, translation=translation_element.text
+        )
+
+    return []
 
 
-def make_examples(examples):
-    return [make_example(example) for example in examples if len(example)]
+def make_examples(examples, target):
+    return [make_example(example, target) for example in examples if len(example)]
 
 
 def make_translation_group(translation_group, target, dictprefix):
@@ -250,7 +258,7 @@ def make_translation_group(translation_group, target, dictprefix):
             translation_group.xpath("./t"), target, dictprefix
         ),
         restriction=make_restriction(translation_group),
-        exampleGroups=make_examples(translation_group.xpath("./xg")),
+        exampleGroups=make_examples(translation_group.xpath("./xg"), target),
     )
 
 
@@ -301,22 +309,24 @@ def make_dict_entries(dictxml, dictprefix, src, target):
         ) or (
             f"{src}{target}" in ["smesma", "smasme"] and entry.get("note") == "checked"
         ):
-            dict_entry = DictEntry(
-                dictName=f"{dictprefix}{src}{target}",
-                srcLang=src,
-                targetLang=target,
-                lookupLemmas=make_lemmas(entry.xpath(".//l"), src, dictprefix),
-                translationGroups=make_translation_groups(
-                    entry.xpath(".//tg"), target, dictprefix
-                ),
+            translation_groups = make_translation_groups(
+                entry.xpath(".//tg"), target, dictprefix
             )
-            try:
-                dict_entry.save()
-                yield dict_entry
-            except ValidationError as error:
-                print("Invalid entry")
-                print(etree.tostring(entry, encoding="unicode"))
-                print(str(error))
+            if translation_groups:
+                dict_entry = DictEntry(
+                    dictName=f"{dictprefix}{src}{target}",
+                    srcLang=src,
+                    targetLang=target,
+                    lookupLemmas=make_lemmas(entry.xpath(".//l"), src, dictprefix),
+                    translationGroups=translation_groups,
+                )
+                try:
+                    dict_entry.save()
+                    yield dict_entry
+                except ValidationError as error:
+                    print("Invalid entry")
+                    print(etree.tostring(entry, encoding="unicode"))
+                    print(str(error))
 
 
 def make_entries(dictxml, dictprefix):
@@ -397,6 +407,32 @@ def import_smjmed():
             print(f"Continuing without {xml_file}")
 
 
+def import_sms():
+    print("sms dicts")
+    dictprefix = "gt"
+    for lang in ["fin", "nob", "rus"]:
+        for xml_file in glob.glob(
+            os.path.join(os.getenv("GUTHOME"), "giellalt", f"dict-{lang}-sms", "src")
+            + "/*.xml"
+        ):
+            if not xml_file.endswith("meta.xml") and "Der_" not in xml_file:
+                print(xml_file)
+                for dict_entry in make_dict_entries(
+                    parse_xmlfile(xml_file), dictprefix, lang, "sms"
+                ):
+                    add_dictentry_to_stems(dict_entry, dictprefix, lang, "sms")
+
+    for xml_file in glob.glob(
+        os.path.join(os.getenv("GUTHOME"), "giellalt", "dict-sms-mul", "src") + "/*.xml"
+    ):
+        if not xml_file.endswith("meta.xml") and "Der_" not in xml_file:
+            dictxml = parse_xmlfile(xml_file)
+            for lang in ["fin", "nob", "rus"]:
+                print(xml_file, 'sms', lang)
+                for dict_entry in make_dict_entries(dictxml, dictprefix, "sms", lang):
+                    add_dictentry_to_stems(dict_entry, dictprefix, "sms", lang)
+
+
 def make_stems():
     for stem in STEMS:
         try:
@@ -418,4 +454,5 @@ def run():
     import_dicts()
     make_m()
     import_smjmed()
+    import_sms()
     make_stems()
