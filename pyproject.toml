@@ -6,7 +6,7 @@ authors = ["Børre Gaup <albbas@gmail.com>"]
 license = "GPLv3+"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.10,<4.0"
 aniso8601 = "7.0.0"
 asgiref = "3.2.10"
 astroid = "2.4.2"
