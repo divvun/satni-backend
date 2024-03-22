@@ -139,7 +139,8 @@ def make_concepts(title, termwiki_concept, valid_langs):
             explanation=get_explanation(lang, termwiki_concept),
             terms=make_terms(lang, termwiki_concept),
             collections=list(termwiki_concept.concept.collection)
-            if termwiki_concept.concept.collection is not None
+            if termwiki_concept.concept is not None
+            and termwiki_concept.concept.collection is not None
             else set(),
         )
         c.save()
@@ -428,7 +429,7 @@ def import_sms():
         if not xml_file.endswith("meta.xml") and "Der_" not in xml_file:
             dictxml = parse_xmlfile(xml_file)
             for lang in ["fin", "nob", "rus"]:
-                print(xml_file, 'sms', lang)
+                print(xml_file, "sms", lang)
                 for dict_entry in make_dict_entries(dictxml, dictprefix, "sms", lang):
                     add_dictentry_to_stems(dict_entry, dictprefix, "sms", lang)
 
