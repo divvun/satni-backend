@@ -38,7 +38,7 @@ DICTS = [
     "fin-smn",
     "nob-sma",
     "nob-sme",
-    "sma-nob",
+    "sma-mul",
     "sma-sme",
     "sme-fin",
     "sme-nob",
@@ -333,7 +333,7 @@ def make_dict_entries(dictxml, dictprefix, src, target):
 def make_entries(dictxml, dictprefix):
     pair = dictxml.getroot().get("id")
     src = pair[:3]
-    target = pair[3:]
+    target = "nob" if pair[3:] == "mul" pair[3:]
 
     for dict_entry in make_dict_entries(dictxml, dictprefix, src, target):
         add_dictentry_to_stems(dict_entry, dictprefix, src, target)
