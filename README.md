@@ -92,7 +92,13 @@ Gives this answer:
       "queryType": {
         "fields": [
           {
+            "name": "generated"
+          },
+          {
             "name": "conceptList"
+          },
+          {
+            "name": "lemmatised"
           },
           {
             "name": "dictEntryList"
