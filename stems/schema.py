@@ -2,6 +2,7 @@
 import logging
 
 import graphene
+from graphene import relay
 from graphene_mongo.fields import MongoengineConnectionField
 from mongoengine.queryset.visitor import Q
 
@@ -21,9 +22,19 @@ def get_search_filter(mode, search):
     return Q(search_stem__istartswith=search)
 
 
+class StemConnection(relay.Connection):
+    class Meta:
+        node = StemType
+
+    total_count = graphene.Int()
+
+    def resolve_total_count(self, info):
+        return len(self.iterable)
+
+
 class Query(graphene.ObjectType):
-    stem_list = MongoengineConnectionField(
-        StemType,
+    stem_list = graphene.ConnectionField(
+        StemConnection,
         search=graphene.String(required=True),
         mode=graphene.String(required=True),
         src_langs=graphene.List(graphene.String, required=True),
@@ -64,4 +75,5 @@ class Query(graphene.ObjectType):
             Q(dicts__in=kwargs["wanted_dicts"])
         )
         
-        return Stem.objects(combined_filter)
+        queryset = Stem.objects(combined_filter)
+        return queryset
