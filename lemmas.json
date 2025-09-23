@@ -1,7 +1,7 @@
 {
   "operationName": "AllLemmas",
   "variables": {
-    "inputValue": "arg",
+    "inputValue": "a",
     "searchMode": "start",
     "srcLangs": [
       "sme",
