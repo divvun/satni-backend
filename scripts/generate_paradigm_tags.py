@@ -41,7 +41,7 @@ class TaglistGenerator:
             json.dump(paradigm_templates, tag_stream, indent=2)
 
     def generate_tag(self, tag, tag_dict, classes, taglist):
-        """Travel recursively the taglists and generate the tagsets for pardigm generation.
+        """Generate the tagsets for pardigm generation.
 
         Arguments:
             tag: str
