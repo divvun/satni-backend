@@ -3,7 +3,6 @@
 import dicts.schema
 import generator.schema
 import graphene
-import lemmas.schema
 import lemmatiser.schema
 import stems.schema
 import terms.schema

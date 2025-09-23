@@ -1,9 +1,7 @@
 from mongoengine import Document, EmbeddedDocument
 from mongoengine.fields import (
-    BooleanField,
     EmbeddedDocumentField,
     ListField,
-    ObjectIdField,
     ReferenceField,
     StringField,
 )

@@ -1,7 +1,6 @@
 import logging
 
 import graphene
-from graphene_mongo.fields import MongoengineConnectionField
 from lemmas.models import Lemma
 from mongoengine.queryset.visitor import Q
 
