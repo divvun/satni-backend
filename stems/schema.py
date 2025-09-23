@@ -50,22 +50,14 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_has_stem(self, info, exact, **kwargs):
-        by_exact_stem = Stem.objects(stem=exact)
-        target_langs = kwargs["target_langs"]
-        wanted_dicts = kwargs["wanted_dicts"]
-
-        by_target_langs = [
-            s
-            for s in by_exact_stem
-            if any([targetlang in target_langs for targetlang in s.targetlangs])
-        ]
-        by_wanted_dicts = [
-            s
-            for s in by_target_langs
-            if any([dict in wanted_dicts for dict in s.dicts])
-        ]
-
-        return by_wanted_dicts
+        combined_filter = (
+            Q(stem=exact) & 
+            Q(srclangs__in=kwargs["src_langs"]) & 
+            Q(targetlangs__in=kwargs["target_langs"]) & 
+            Q(dicts__in=kwargs["wanted_dicts"])
+        )
+        
+        return Stem.objects(combined_filter)
 
     def resolve_stem_list(self, info, search, **kwargs):
         combined_filter = (
