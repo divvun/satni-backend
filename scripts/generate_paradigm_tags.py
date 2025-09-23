@@ -1,4 +1,5 @@
 """Make taglist for usage in the generator."""
+
 import json
 import os
 import re

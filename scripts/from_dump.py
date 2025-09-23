@@ -198,7 +198,7 @@ def make_dict_lemma(element, lang, dictprefix):
     )
     presentation_lemma = normalised_lemma
 
-    lemma_key = f"{lemma}{presentation_lemma}" f"{element.get('pos')}{lang}"
+    lemma_key = f"{lemma}{presentation_lemma}{element.get('pos')}{lang}"
     if not LEMMAS.get(lemma_key):
         lemma = Lemma(
             lemma=lemma,
@@ -381,8 +381,9 @@ def import_sammallahti():
         make_entries(parse_xmlfile(xml_file), dictprefix="sammallahti")
     except etree.XMLSyntaxError as error:
         print(
-            "Syntax error in {} "
-            "with the following error:\n{}\n".format(xml_file, error),
+            "Syntax error in {} with the following error:\n{}\n".format(
+                xml_file, error
+            ),
             file=sys.stderr,
         )
     except OSError:
@@ -400,8 +401,9 @@ def import_smjmed():
             make_entries(parse_xmlfile(xml_file), dictprefix="habmer")
         except etree.XMLSyntaxError as error:
             print(
-                "Syntax error in {} "
-                "with the following error:\n{}\n".format(xml_file, error),
+                "Syntax error in {} with the following error:\n{}\n".format(
+                    xml_file, error
+                ),
                 file=sys.stderr,
             )
         except OSError:

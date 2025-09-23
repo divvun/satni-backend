@@ -45,6 +45,6 @@ class Query(graphene.ObjectType):
         ]
 
         if wanted_by_langs:
-            LOGGER.info(f"term: {exact} " f'langs: {", ".join(sorted(langs))}')
+            LOGGER.info(f"term: {exact} langs: {', '.join(sorted(langs))}")
 
         return wanted_by_langs

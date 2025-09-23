@@ -1,4 +1,5 @@
 """Models for lemmatiser results."""
+
 import graphene
 
 

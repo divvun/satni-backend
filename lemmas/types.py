@@ -1,4 +1,5 @@
 """Types for the lemma representation."""
+
 from graphene import relay
 from graphene_mongo import MongoengineObjectType
 

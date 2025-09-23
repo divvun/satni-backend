@@ -35,9 +35,9 @@ class Query(graphene.ObjectType):
                 translationGroups__translationLemmas__in=Lemma.objects(lemma=exact)
             )
             by_translation_lemma = DictEntry.objects(translation_filter)
-            dict_entries.extend([
-                d for d in by_translation_lemma if d.dictName == "sammallahtismefin"
-            ])
+            dict_entries.extend(
+                [d for d in by_translation_lemma if d.dictName == "sammallahtismefin"]
+            )
 
         lookup_filter = Q(lookupLemmas__in=Lemma.objects(lemma=exact))
 
@@ -49,9 +49,9 @@ class Query(graphene.ObjectType):
         if dict_entries:
             LOGGER.info(
                 f"{exact} "
-                f'src: {", ".join(sorted(src_langs))} '
-                f'target: {", ".join(sorted(target_langs))} '
-                f'dicts: {", ".join(sorted(wanted_dicts))}'
+                f"src: {', '.join(sorted(src_langs))} "
+                f"target: {', '.join(sorted(target_langs))} "
+                f"dicts: {', '.join(sorted(wanted_dicts))}"
             )
 
         return dict_entries

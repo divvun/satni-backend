@@ -1,4 +1,5 @@
 """Setup a schema to get results from the lemmatiser."""
+
 from pathlib import Path
 
 import graphene

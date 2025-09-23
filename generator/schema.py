@@ -1,14 +1,12 @@
 """Setup a schema to get results from the lemmatiser."""
+
 import graphene
 
 from .generator import ParadigmGenerator
 from .types import GeneratorResultType
 
 GENERATOR_LANGS = ["fin", "sma", "sme", "smj", "smn", "sms"]
-GENERATORS = {
-    language: ParadigmGenerator(language)
-    for language in GENERATOR_LANGS
-}
+GENERATORS = {language: ParadigmGenerator(language) for language in GENERATOR_LANGS}
 
 
 class Query(graphene.ObjectType):
@@ -27,7 +25,7 @@ class Query(graphene.ObjectType):
 
         if language not in GENERATOR_LANGS:
             return []
-        
+
         return [
             {
                 "paradigm_template": paradigm_template,

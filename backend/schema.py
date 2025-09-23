@@ -1,4 +1,5 @@
 """The GraphQL schema for the whole app."""
+
 import dicts.schema
 import generator.schema
 import graphene

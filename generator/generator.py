@@ -1,4 +1,5 @@
 """Paradigm generator engine."""
+
 import json
 import re
 from collections import namedtuple

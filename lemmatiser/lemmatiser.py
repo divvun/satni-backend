@@ -1,4 +1,5 @@
 """Lemmatise incoming words"""
+
 import re
 import sys
 from collections import namedtuple

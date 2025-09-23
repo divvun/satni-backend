@@ -1,4 +1,5 @@
 """Models for generator results."""
+
 import graphene
 
 
