@@ -9,7 +9,7 @@ from .types import LemmatiserResultType
 
 LEMMATISERS = {
     path.name: lemmatiser(path.name)
-    for path in Path("/usr/local/share/giella/").glob("???")
+    for path in Path("/usr/share/giella/").glob("???")
 }
 
 
