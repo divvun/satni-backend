@@ -1,7 +1,6 @@
 import graphene
 from graphene import relay
 from graphene_mongo import MongoengineObjectType
-from graphene_mongo.fields import MongoengineConnectionField
 from lemmas.types import LemmaType
 
 from .models import DictEntry, ExampleGroup, Restriction, TranslationGroup
