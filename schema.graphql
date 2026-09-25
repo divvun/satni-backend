@@ -44,6 +44,7 @@ type LemmaType implements Node {
   lemma: String!
   pos: String
   presentationLemma: String!
+  hasStem(srcLangs: [String]!, targetLangs: [String]!, wantedDicts: [String]!): Boolean
 }
 
 type LemmaTypeConnection {
@@ -84,7 +85,6 @@ type Query {
   lemmatised(lookupString: String!): [LemmatiserResultType]
   dictEntryList(exact: String!, srcLangs: [String]!, targetLangs: [String]!, wantedDicts: [String]!): [DictEntryType]
   stemList(search: String!, mode: String!, srcLangs: [String]!, targetLangs: [String]!, wantedDicts: [String]!, before: String, after: String, first: Int, last: Int, dicts: String, id: ID, searchStem: String, srclangs: String, stem: String, targetlangs: String): StemTypeConnection
-  hasStem(exact: String!, srcLangs: [String]!, targetLangs: [String]!, wantedDicts: [String]!): [StemType]
   korpLemmaExists(language: String!, lemma: String!): Boolean
 }
 

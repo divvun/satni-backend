@@ -80,23 +80,6 @@ class Query(graphene.ObjectType):
         target_langs=graphene.List(graphene.String, required=True),
         wanted_dicts=graphene.List(graphene.String, required=True),
     )
-    has_stem = graphene.List(
-        StemType,
-        exact=graphene.String(required=True),
-        src_langs=graphene.List(graphene.String, required=True),
-        target_langs=graphene.List(graphene.String, required=True),
-        wanted_dicts=graphene.List(graphene.String, required=True),
-    )
-
-    def resolve_has_stem(self, info, exact, **kwargs):
-        combined_filter = (
-            Q(stem=exact)
-            & Q(srclangs__in=kwargs["src_langs"])
-            & Q(targetlangs__in=kwargs["target_langs"])
-            & Q(dicts__in=kwargs["wanted_dicts"])
-        )
-
-        return Stem.objects(combined_filter)
 
     def resolve_stem_list(self, info, search, **kwargs):
         """

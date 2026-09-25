@@ -3,6 +3,7 @@ import logging
 import graphene
 from lemmas.models import Lemma
 from mongoengine.queryset.visitor import Q
+from stems.has_stem_cache import preload_has_stem
 
 from .models import DictEntry
 from .types import DictEntryType
@@ -44,6 +45,22 @@ class Query(graphene.ObjectType):
             & Q(dictName__in=wanted_dicts)
         )
         dict_entries.extend(DictEntry.objects(lookup_filter))
+
+        # Precompute hasStem for every lemma that will appear in the
+        # response (lookupLemmas + translationLemmas) in a single indexed
+        # Stem query, cached on the request. This lets LemmaType.hasStem
+        # answer instantly when the frontend asks for it alongside the
+        # dict entries, instead of the frontend issuing a separate hasStem
+        # query per stem. Note: this re-accesses references that
+        # mongoengine already dereferences (and caches) while building
+        # this response, so it doesn't add extra queries beyond the one
+        # Stem lookup itself.
+        lemma_strings = set()
+        for entry in dict_entries:
+            lemma_strings.update(lemma.lemma for lemma in entry.lookupLemmas)
+            for group in entry.translationGroups:
+                lemma_strings.update(lemma.lemma for lemma in group.translationLemmas)
+        preload_has_stem(info, lemma_strings, src_langs, target_langs, wanted_dicts)
 
         if dict_entries:
             LOGGER.info(
