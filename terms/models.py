@@ -19,7 +19,7 @@ class Term(EmbeddedDocument):
 
 
 class Concept(Document):
-    meta = {"collection": "terms"}
+    meta = {"collection": "terms", "indexes": ["name", "terms.expression"]}
     name = StringField(required=True)
     language = StringField(required=True)
     definition = StringField(blank=True, null=True)

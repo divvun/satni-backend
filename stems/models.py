@@ -3,7 +3,7 @@ from mongoengine.fields import ListField, StringField
 
 
 class Stem(Document):
-    meta = {"collection": "stems"}
+    meta = {"collection": "stems", "indexes": ["stem", "search_stem"]}
     stem = StringField(required=True)
     search_stem = StringField(required=True)
     srclangs = ListField(StringField(required=True))

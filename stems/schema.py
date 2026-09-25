@@ -14,13 +14,23 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_search_filter(mode, search):
+    """
+    Build the search filter for the given mode.
+
+    `search_stem` is always stored lowercased, so the incoming `search` is
+    expected to already be lowercased (see `resolve_stem_list`). Using
+    case-sensitive regex operators (as opposed to the case-insensitive
+    `istartswith`/`icontains`/`iendswith` variants) lets MongoDB use the
+    `search_stem` index to do an actual range-seek for the (most common)
+    "start" mode, instead of scanning every document in the collection.
+    """
     if mode == "middle":
-        return Q(search_stem__icontains=search)
+        return Q(search_stem__contains=search)
 
     if mode == "end":
-        return Q(search_stem__iendswith=search)
+        return Q(search_stem__endswith=search)
 
-    return Q(search_stem__istartswith=search)
+    return Q(search_stem__startswith=search)
 
 
 @lru_cache(maxsize=128)
@@ -97,6 +107,12 @@ class Query(graphene.ObjectType):
         """
         if not search:
             return Stem.objects.none()
+
+        # Lowercase up front: search_stem is always stored lowercased, so this
+        # keeps matching correct for case-sensitive filters (see
+        # get_search_filter) and improves the LRU cache hit rate for
+        # differently-cased repeats of the same search.
+        search = search.lower()
 
         # Convert lists to sorted tuples for cache key consistency
         cached_results = _cached_stem_query(

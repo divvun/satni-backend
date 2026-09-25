@@ -23,6 +23,8 @@ class Query(graphene.ObjectType):
         src_langs = kwargs["src_langs"]
         target_langs = kwargs["target_langs"]
 
+        matching_lemmas = Lemma.objects(lemma=exact)
+
         dict_entries = []
 
         if (
@@ -31,19 +33,17 @@ class Query(graphene.ObjectType):
             and "sammallahtismefin" in wanted_dicts
         ):
             translation_filter = Q(
-                translationGroups__translationLemmas__in=Lemma.objects(lemma=exact)
-            )
-            by_translation_lemma = DictEntry.objects(translation_filter)
-            dict_entries.extend(
-                [d for d in by_translation_lemma if d.dictName == "sammallahtismefin"]
-            )
+                translationGroups__translationLemmas__in=matching_lemmas
+            ) & Q(dictName="sammallahtismefin")
+            dict_entries.extend(DictEntry.objects(translation_filter))
 
-        lookup_filter = Q(lookupLemmas__in=Lemma.objects(lemma=exact))
-
-        by_lookup_lemma = DictEntry.objects(lookup_filter)
-        by_src_lang = [d for d in by_lookup_lemma if d.srcLang in src_langs]
-        by_target_lang = [d for d in by_src_lang if d.targetLang in target_langs]
-        dict_entries.extend([d for d in by_target_lang if d.dictName in wanted_dicts])
+        lookup_filter = (
+            Q(lookupLemmas__in=matching_lemmas)
+            & Q(srcLang__in=src_langs)
+            & Q(targetLang__in=target_langs)
+            & Q(dictName__in=wanted_dicts)
+        )
+        dict_entries.extend(DictEntry.objects(lookup_filter))
 
         if dict_entries:
             LOGGER.info(

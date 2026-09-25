@@ -26,7 +26,10 @@ class TranslationGroup(EmbeddedDocument):
 
 
 class DictEntry(Document):
-    meta = {"collection": "dicts"}
+    meta = {
+        "collection": "dicts",
+        "indexes": ["lookupLemmas", "translationGroups.translationLemmas"],
+    }
     dictName = StringField(required=True)
     srcLang = StringField(required=True)
     targetLang = StringField(required=True)

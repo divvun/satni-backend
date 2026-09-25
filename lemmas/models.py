@@ -7,7 +7,7 @@ from mongoengine.fields import StringField
 class Lemma(Document):
     """A representation of lemmas."""
 
-    meta = {"collection": "lemmas"}
+    meta = {"collection": "lemmas", "indexes": ["lemma"]}
     lemma = StringField(required=True)
     presentation_lemma = StringField(required=True)
     pos = StringField()

@@ -8,3 +8,4 @@ done
 poetry run python manage.py makemigrations
 poetry run python manage.py migrate
 poetry run python manage.py runscript from_dump
+poetry run python manage.py runscript create_indexes

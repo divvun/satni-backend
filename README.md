@@ -39,6 +39,7 @@ setuptools), and we need to use the system packages instead.
 ```bash
 poetry run python manage.py migrate ## migrate the database
 poetry run python manage.py runscript from_dump ## import content from langtech
+poetry run python manage.py runscript create_indexes ## build the mongodb indexes
 ```
 
 ### Development
