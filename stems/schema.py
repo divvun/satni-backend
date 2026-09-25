@@ -1,9 +1,11 @@
 """Queries for stem models."""
 
 import logging
+import re
 from functools import lru_cache
 
 import graphene
+from bson import Regex
 from graphene import relay
 from mongoengine.queryset.visitor import Q
 
@@ -18,19 +20,27 @@ def get_search_filter(mode, search):
     Build the search filter for the given mode.
 
     `search_stem` is always stored lowercased, so the incoming `search` is
-    expected to already be lowercased (see `resolve_stem_list`). Using
-    case-sensitive regex operators (as opposed to the case-insensitive
-    `istartswith`/`icontains`/`iendswith` variants) lets MongoDB use the
-    `search_stem` index to do an actual range-seek for the (most common)
-    "start" mode, instead of scanning every document in the collection.
+    expected to already be lowercased (see `resolve_stem_list`).
+
+    This builds the regex filter as an unflagged `bson.Regex` instead of
+    using mongoengine's `__startswith`/`__contains`/`__endswith` operators.
+    Those operators build the regex via Python's `re.compile`, which always
+    attaches the `re.UNICODE` flag to `str` patterns (even when `flags=0` is
+    passed explicitly) - and MongoDB's query planner refuses to use an
+    anchored index range-seek for *any* regex that carries option flags,
+    falling back to a full index scan instead. A `bson.Regex` built with no
+    flags avoids that pitfall and lets MongoDB range-seek on the
+    `search_stem` index for the (most common) "start" mode.
     """
+    escaped = re.escape(search)
+
     if mode == "middle":
-        return Q(search_stem__contains=search)
+        return Q(search_stem=Regex(escaped))
 
     if mode == "end":
-        return Q(search_stem__endswith=search)
+        return Q(search_stem=Regex(f"{escaped}$"))
 
-    return Q(search_stem__startswith=search)
+    return Q(search_stem=Regex(f"^{escaped}"))
 
 
 @lru_cache(maxsize=128)
