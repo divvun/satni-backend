@@ -1,3 +1,5 @@
+# Intro
+
 This is a [Django](https://www.djangoproject.com/) backend for
 [sátni.org](http://sátni.org) that uses [Mongodb](https://www.mongodb.com/) to
 serve a GraphQL-endpoint to the
@@ -6,7 +8,7 @@ serve a GraphQL-endpoint to the
 The development of this backend is most easily done in a Linux environment. On
 Mac, the needed fsts must be compiled and installed from source.
 
-# Prerequisites
+## Prerequisites
 
 - Install and setup mongodb
 - Install
@@ -18,14 +20,14 @@ Mac, the needed fsts must be compiled and installed from source.
 - Set the environment variable GTHOME to point to the working copy of langtech
 - Fetch [poetry](https://python-poetry.org/docs/#installation)
 
-# Initial setup
+## Initial setup
 
 - cp .env.example to .env
 - set the app secret (follow the link in .env)
 - set the mongodb username and password
 
 ```bash
-poetry install # install dependencies
+poetry install ## install dependencies
 ```
 
 Use `poetry env list` and `poetry config --list` to find out where the active
@@ -35,11 +37,11 @@ This step is needed because hfst sometimes is uninstallable using poetry (pip,
 setuptools), and we need to use the system packages instead.
 
 ```bash
-poetry run python manage.py migrate # migrate the database
-poetry run python manage.py runscript from_dump # import content from langtech
+poetry run python manage.py migrate ## migrate the database
+poetry run python manage.py runscript from_dump ## import content from langtech
 ```
 
-## Development
+### Development
 
 Set DEBUG=True in .env, then run the following command
 
@@ -50,7 +52,7 @@ poetry run python manage.py runserver
 Find out which queries are available by going to the built-in GraphQL IDE at
 <http://localhost:8000/graphql/>
 
-## Null the database, migrate and import content
+### Null the database, migrate and import content
 
 ```bash
 ./init_backend.sh
@@ -59,7 +61,7 @@ Find out which queries are available by going to the built-in GraphQL IDE at
 The startup of this repo was the
 [Django and GraphQL intro](https://www.howtographql.com/graphql-python/1-getting-started/)
 
-## GraphQL schema
+### GraphQL schema
 
 To dump the schema, run:
 
@@ -67,7 +69,7 @@ To dump the schema, run:
 poetry run python manage.py graphql_schema --out schema.graphql
 ```
 
-# Queries
+## Queries
 
 The examples below query the production server. If you'd like to do queries on
 the development server, use the url `http://localhost:8000/graphql/` instead of
@@ -116,7 +118,7 @@ Gives this answer:
 }
 ```
 
-## stemList
+### stemList
 
 Search the database for lookup words.
 
@@ -138,7 +140,7 @@ The list `wantedDicts` tells which dictionaries we would like answers from.
 
 Edit `lemmas.json` to experiment with the query.
 
-## conceptList and dictEntryList
+### conceptList and dictEntryList
 
 Get dictionary and terminology articles.
 
@@ -161,7 +163,7 @@ we would like answers from.
 
 Edit `articles.json` to experiment with the query.
 
-## hasStem
+### hasStem
 
 Used to decide whether `stem` is in the stemList. In
 [satni-frontend](https://github.com/divvun/satni-frontend) this is used to
@@ -179,7 +181,7 @@ curl https://satni.uit.no/newsatni/ \
 --data-binary '@hasStem.json'
 ```
 
-## generated
+### generated
 
 Used to generate wordforms from a paradigm template.
 
@@ -197,7 +199,7 @@ curl https://satni.uit.no/newsatni/ \
 --data-binary '@generated.json'
 ```
 
-## lemmatised
+### lemmatised
 
 Used to analyse wordforms sent to the lemmatiser.
 
@@ -219,7 +221,7 @@ curl https://satni.uit.no/newsatni/ \
 --data-binary '@lemmatised.json'
 ```
 
-## Find all capabilities
+### Find all capabilities
 
 To get a complete overview what this backend offers, download
 [all.json](all.json) and do the command:
@@ -232,7 +234,7 @@ curl https://satni.uit.no/newsatni/ \
 --data-binary '@all.json'
 ```
 
-# Deployment using systemd
+## Deployment using systemd
 
 Login as the user that should run the service. Clone this repo in the root of
 the home directory. Check out the langtech svn repo as described above in the
@@ -251,7 +253,7 @@ Move into the satni-backend directory, then run these commands:
 Edit `~/.config/systemd/user/satni.service`, replace `virtualenv-path/gunicorn`
 with the result you got from `which gunicorn`
 
-## Managing the service
+### Managing the service
 
 - systemctl --user start satni
 - systemctl --user stop satni
