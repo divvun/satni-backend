@@ -1,6 +1,7 @@
 """Paradigm generator engine."""
 
 import json
+import platform
 import re
 from collections import namedtuple
 from pathlib import Path
@@ -18,14 +19,16 @@ class ParadigmGenerator:
 
     def __init__(self, lang):
         """Initialise HFST analysers."""
-        analyser_path = (
-            Path("/usr/share/giella") / lang / "analyser-gt-desc.hfstol"
+        giella_dir = (
+            Path("/usr/share/giella")
+            if platform.system() == "Linux"
+            else Path("/usr/local/share/giella")
         )
+
+        analyser_path = giella_dir / lang / "analyser-gt-desc.hfstol"
         self.analyser = hfst.HfstInputStream(str(analyser_path)).read()
 
-        generator_path = (
-            Path("/usr/share/giella") / lang / "generator-gt-norm.hfstol"
-        )
+        generator_path = giella_dir / lang / "generator-gt-norm.hfstol"
         self.generator = hfst.HfstInputStream(str(generator_path)).read()
         self.lang = lang
 

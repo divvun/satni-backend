@@ -1,5 +1,6 @@
 """Setup a schema to get results from the lemmatiser."""
 
+import platform
 from pathlib import Path
 
 import graphene
@@ -7,10 +8,13 @@ import graphene
 from .lemmatiser import lemmatiser
 from .types import LemmatiserResultType
 
-LEMMATISERS = {
-    path.name: lemmatiser(path.name)
-    for path in Path("/usr/share/giella/").glob("???")
-}
+GIELLA_DIR = (
+    Path("/usr/share/giella")
+    if platform.system() == "Linux"
+    else Path("/usr/local/share/giella")
+)
+
+LEMMATISERS = {path.name: lemmatiser(path.name) for path in GIELLA_DIR.glob("???")}
 
 
 class Query(graphene.ObjectType):

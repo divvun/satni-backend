@@ -1,5 +1,6 @@
 """Lemmatise incoming words"""
 
+import platform
 import re
 import sys
 from collections import namedtuple
@@ -18,7 +19,12 @@ class Lemmatiser:
 
     def __init__(self, lang):
         """Initialise HFST analysers."""
-        path = Path("/usr/share/giella") / lang
+        giella_dir = (
+            Path("/usr/share/giella")
+            if platform.system() == "Linux"
+            else Path("/usr/local/share/giella")
+        )
+        path = giella_dir / lang
         self.analyser = hfst.HfstInputStream(
             str(path / "analyser-gt-desc.hfstol")
         ).read()
