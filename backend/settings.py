@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "graphene_mongo",
     "lemmas",
     "terms",
+    "korp",
 ]
 
 MIDDLEWARE = [

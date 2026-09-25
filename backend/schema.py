@@ -3,6 +3,7 @@
 import dicts.schema
 import generator.schema
 import graphene
+import korp.schema
 import lemmatiser.schema
 import stems.schema
 import terms.schema
@@ -14,6 +15,7 @@ class Query(
     lemmatiser.schema.Query,
     terms.schema.Query,
     generator.schema.Query,
+    korp.schema.Query,
     graphene.ObjectType,
 ):
     pass
