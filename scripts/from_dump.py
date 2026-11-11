@@ -264,11 +264,19 @@ def make_translation_group(translation_group, target, dictprefix):
 
 
 def make_translation_groups(translation_groups, target, dictprefix):
-    return [
-        make_translation_group(translation_group, target, dictprefix)
-        for translation_group in translation_groups
-        if translation_group.get("{http://www.w3.org/XML/1998/namespace}lang") == target
-    ]
+    t_groups = []
+    for translation_group in translation_groups:
+        if (
+            translation_group.get("{http://www.w3.org/XML/1998/namespace}lang")
+            == target
+        ):
+            translation = translation_group.find("./t")
+            if translation is not None and translation.text is not None:
+                t_groups.append(
+                    make_translation_group(translation_group, target, dictprefix)
+                )
+
+    return t_groups
 
 
 def add_to_stems(lemma, dictname, src, target):
