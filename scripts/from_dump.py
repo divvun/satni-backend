@@ -354,11 +354,15 @@ def import_dictfile(xml_file):
 
 
 def dict_paths():
+    gut_home = os.getenv("GUTHOME")
+    if gut_home is None:
+        raise EnvironmentError("GUTHOME environment variable is not set.")
+    
     return [
         xml_file
         for pair in DICTS
         for xml_file in glob.glob(
-            os.path.join(os.getenv("GUTHOME"), "giellalt", f"dict-{pair}", "src")
+            os.path.join(gut_home, "giellalt", f"dict-{pair}", "src")
             + "/*.xml"
         )
         if not xml_file.endswith("meta.xml") and "Der_" not in xml_file
