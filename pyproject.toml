@@ -19,6 +19,7 @@ graphene-mongo = "^0.4.4"
 [tool.poetry.group.dev.dependencies]
 nose2 = "^0.10.0"
 ruff = "^0.13.1"
+types-lxml = "^2026.2.16"
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
