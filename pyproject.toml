@@ -16,10 +16,8 @@ django-cors-headers = "^4.9.0"
 graphene-django = "^3.2.3"
 graphene-mongo = "^0.4.4"
 
-[tool.poetry.dev-dependencies]
-nose2 = "^0.10.0"
-
 [tool.poetry.group.dev.dependencies]
+nose2 = "^0.10.0"
 ruff = "^0.13.1"
 
 [tool.ruff]
