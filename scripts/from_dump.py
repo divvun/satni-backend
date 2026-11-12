@@ -322,24 +322,37 @@ def add_dictentry_to_stems(
     dict_entry: DictEntry, dictprefix: str, src: str, target: str
 ):
     for lookup_lemma in dict_entry.lookupLemmas:
-        add_to_stems(
-            sammallahti_replacer(lookup_lemma.lemma)
-            if dictprefix == "sammallahti"
-            else lookup_lemma.lemma,
-            dictprefix,
-            src,
-            target,
-        )
+        try:
+            add_to_stems(
+                sammallahti_replacer(lookup_lemma.lemma)
+                if dictprefix == "sammallahti"
+                else lookup_lemma.lemma,
+                dictprefix,
+                src,
+                target,
+            )
+        except AttributeError as error:
+            print(f"Error adding lookup lemma to stems: {error}")
+            print(f"Dict entry: {dict_entry.dictName}, src: {src}, target: {target}")
+            print(f"Lookup lemma: {lookup_lemma}")
 
     if dictprefix == "sammallahti":
         for translation_group in dict_entry.translationGroups:
             for translation_lemma in translation_group.translationLemmas:
-                add_to_stems(
-                    sammallahti_replacer(translation_lemma.lemma),
-                    dictprefix,
-                    src,
-                    target,
-                )
+                try:
+                    add_to_stems(
+                        sammallahti_replacer(translation_lemma.lemma),
+                        dictprefix,
+                        src,
+                        target,
+                    )
+                except AttributeError as error:
+                    print(f"Error adding translation lemma to stems: {error}")
+                    print(
+                        f"Dict entry: {dict_entry.dictName}, "
+                        f"src: {src}, target: {target}"
+                    )
+                    print(f"Translation lemma: {translation_lemma}")
 
 
 def make_dict_entries(
@@ -385,7 +398,12 @@ def make_entries(dictxml: etree.ElementTree, dictprefix: str) -> None:
     target = "nob" if pair[3:] == "mul" else pair[3:]
 
     for dict_entry in make_dict_entries(dictxml, dictprefix, src, target):
-        add_dictentry_to_stems(dict_entry, dictprefix, src, target)
+        try:
+            add_dictentry_to_stems(dict_entry, dictprefix, src, target)
+        except AttributeError as error:
+            print(f"Error adding dict entry to stems: {error}")
+            print(f"Dict entry: {dict_entry.dictName}, src: {src}, target: {target}")
+            print(f"Dict entry: {dict_entry}")
 
 
 def import_dictfile(xml_file: str) -> None:
