@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
+from collections.abc import Iterator
 import glob
 import os
 import re
 import sys
+from typing import Iterable
 
 from lxml import etree
 from mongoengine.errors import ValidationError
 from termwikitools import dumphandler
+from termwikitools.read_termwiki import RelatedExpression, TermWikiPage
 
 from dicts.models import DictEntry, ExampleGroup, Restriction, TranslationGroup
 from lemmas.models import Lemma
@@ -16,8 +19,8 @@ from terms.models import Concept, Term
 REMOVER_RE = r'[ꞌ|@ˣ."*]'
 """Remove these characters from Sammallahti's original lemmas."""
 
-LEMMAS = {}
-STEMS = {}
+LEMMAS: dict[str, Lemma] = {}
+STEMS: dict[str, dict[str, set[str]]] = {}
 LANGS = {
     "en": "eng",
     "fi": "fin",
@@ -54,19 +57,19 @@ DICTS = [
 ]
 
 
-def sammallahti_remover(line):
+def sammallahti_remover(line: str) -> str:
     """Remove Sammallahti's special characters."""
     return re.sub(REMOVER_RE, "", line).strip()
 
 
-def sammallahti_replacer(line):
+def sammallahti_replacer(line: str) -> str:
     """Replace special characters found in Sammallahti's dictionary."""
     return sammallahti_remover(line).translate(
         str.maketrans("Èéíïēīĵĺōūḥḷṃṇṿạẹọụÿⓑⓓⓖ·ṛü’ ", "Eeiieijlouhlmrvaeouybdg ru' ")
     )
 
 
-def make_lemma(lang, expression):
+def make_lemma(lang: str, expression: RelatedExpression) -> Lemma:
     lemma_key = f"{expression.expression}{expression.pos}{LANGS[lang]}"
     if not LEMMAS.get(lemma_key):
         lemma = Lemma(
@@ -83,7 +86,7 @@ def make_lemma(lang, expression):
     return LEMMAS[lemma_key]
 
 
-def make_terms(lang, concept):
+def make_terms(lang: str, concept: TermWikiPage) -> Iterator[Term]:
     """Make terms in the database."""
     for expression in same_lang_sanctioned_expressions(
         lang, concept.related_expressions
@@ -98,23 +101,29 @@ def make_terms(lang, concept):
         yield term
 
 
-def get_definition(lang, termwiki_concept):
+def get_definition(lang: str, termwiki_concept: TermWikiPage) -> str | None:
     """Find the definition"""
     if termwiki_concept.concept_infos is not None:
         for concept_info in termwiki_concept.concept_infos:
             if lang == concept_info.language:
                 return concept_info.definition
 
+    return None
 
-def get_explanation(lang, termwiki_concept):
-    """Find the explanatiion."""
+
+def get_explanation(lang: str, termwiki_concept: TermWikiPage) -> str | None:
+    """Find the explanation."""
     if termwiki_concept.concept_infos is not None:
         for concept_info in termwiki_concept.concept_infos:
             if lang == concept_info.language:
                 return concept_info.explanation
 
+    return None
 
-def same_lang_sanctioned_expressions(lang, expressions):
+
+def same_lang_sanctioned_expressions(
+    lang: str, expressions: list[RelatedExpression]
+) -> list[RelatedExpression]:
     return [
         expression
         for expression in expressions
@@ -122,7 +131,7 @@ def same_lang_sanctioned_expressions(lang, expressions):
     ]
 
 
-def get_valid_langs(termwiki_concept):
+def get_valid_langs(termwiki_concept: TermWikiPage) -> set[str]:
     return {
         related_expression.language
         for related_expression in termwiki_concept.related_expressions
@@ -130,7 +139,7 @@ def get_valid_langs(termwiki_concept):
     }
 
 
-def make_concepts(title, termwiki_concept, valid_langs):
+def make_concepts(title: str, termwiki_concept: TermWikiPage, valid_langs: set[str]):
     for lang in valid_langs:
         c = Concept(
             name=f"{title}",
@@ -156,14 +165,14 @@ def make_m():
             make_concepts(title, termwiki_page, valid_langs)
 
 
-def get_stem(lemma):
+def get_stem(lemma: str) -> dict[str, set[str]]:
     if STEMS.get(lemma) is None:
         STEMS[lemma] = {key: set() for key in ["fromlangs", "tolangs", "dicts"]}
 
     return STEMS[lemma]
 
 
-def extract_term_stems(concept, valid_langs):
+def extract_term_stems(concept: TermWikiPage, valid_langs: set[str]) -> None:
     for lang in valid_langs:
         for expression in same_lang_sanctioned_expressions(
             lang, concept.related_expressions
@@ -189,7 +198,10 @@ def normalise_lemma(lemma: str) -> str:
     return lemma
 
 
-def make_dict_lemma(element, lang, dictprefix):
+def make_dict_lemma(element: etree.Element, lang: str, dictprefix: str) -> Lemma | None:
+    if element.text is None:
+        return None
+
     normalised_lemma = normalise_lemma(element.text)
     lemma = (
         sammallahti_replacer(normalised_lemma)
@@ -214,15 +226,15 @@ def make_dict_lemma(element, lang, dictprefix):
     return LEMMAS[lemma_key]
 
 
-def make_lemmas(translations, target, dictprefix):
-    return [
-        make_dict_lemma(translation, target, dictprefix)
-        for translation in translations
-        if translation.text is not None
-    ]
+def make_lemmas(
+    translations: Iterable[etree.Element], target: str, dictprefix: str
+) -> Iterator[Lemma | None]:
+    return (
+        make_dict_lemma(translation, target, dictprefix) for translation in translations
+    )
 
 
-def make_restriction(translation_group):
+def make_restriction(translation_group: etree.Element) -> Restriction | None:
     restriction_element = translation_group.find("./re")
     if restriction_element is not None:
         return Restriction(
@@ -231,55 +243,72 @@ def make_restriction(translation_group):
         )
 
     t_element = translation_group.find("./t[@reg]")
-    if t_element is not None and t_element.get("reg").lower() != "x":
+    if t_element is not None and t_element.get("reg", "").lower() != "x":
         return Restriction(restriction=t_element.get("reg"), attributes="")
 
+    return None
 
-def make_example(example, target):
+
+def make_example(example: etree.Element, target: str) -> ExampleGroup | None:
+    original_element = example.find("./x")
     translation_element = example.find("./xt")
-    if (
-        translation_element.get("{http://www.w3.org/XML/1998/namespace}lang") is None
-    ) or (
-        translation_element.get("{http://www.w3.org/XML/1998/namespace}lang") == target
-    ):
-        return ExampleGroup(
-            example=example.find("./x").text, translation=translation_element.text
+    if (original_element is not None and translation_element is not None) and (
+        (translation_element.get("{http://www.w3.org/XML/1998/namespace}lang") is None)
+        or (
+            translation_element.get("{http://www.w3.org/XML/1998/namespace}lang")
+            == target
         )
+    ):
+        if original_element.text is not None and translation_element.text is not None:
+            return ExampleGroup(
+                example=original_element.text, translation=translation_element.text
+            )
 
-    return []
+    return None
 
 
-def make_examples(examples, target):
-    return [make_example(example, target) for example in examples if len(example)]
+def make_examples(
+    examples: Iterable[etree.Element], target: str
+) -> Iterator[ExampleGroup | None]:
+    return (make_example(example, target) for example in examples)
 
 
-def make_translation_group(translation_group, target, dictprefix):
+def make_translation_group(
+    translation_group: etree.Element, target: str, dictprefix: str
+) -> TranslationGroup | None:
+    translations = translation_group.xpath("./t")
+    if translations is None or len(translations) == 0:
+        return None
+
     return TranslationGroup(
-        translationLemmas=make_lemmas(
-            translation_group.xpath("./t"), target, dictprefix
-        ),
+        translationLemmas=[
+            lemma
+            for lemma in make_lemmas(translation_group.xpath("./t"), target, dictprefix)
+            if lemma is not None
+        ],
         restriction=make_restriction(translation_group),
-        exampleGroups=make_examples(translation_group.xpath("./xg"), target),
+        exampleGroups=[
+            example
+            for example in make_examples(translation_group.xpath("./xg"), target)
+            if example is not None
+        ],
     )
 
 
-def make_translation_groups(translation_groups, target, dictprefix):
-    t_groups = []
-    for translation_group in translation_groups:
+def make_translation_groups(
+    translation_groups: Iterable[etree.Element], target: str, dictprefix: str
+) -> Iterator[TranslationGroup | None]:
+    return (
+        make_translation_group(translation_group, target, dictprefix)
+        for translation_group in translation_groups
         if (
             translation_group.get("{http://www.w3.org/XML/1998/namespace}lang")
             == target
-        ):
-            translation = translation_group.find("./t")
-            if translation is not None and translation.text is not None:
-                t_groups.append(
-                    make_translation_group(translation_group, target, dictprefix)
-                )
-
-    return t_groups
+        )
+    )
 
 
-def add_to_stems(lemma, dictname, src, target):
+def add_to_stems(lemma: str, dictname: str, src: str, target: str):
     if "(+" not in lemma:
         stem = get_stem(lemma)
         stem["dicts"].add(f"{dictname}{src}{target}")
@@ -289,7 +318,9 @@ def add_to_stems(lemma, dictname, src, target):
         print(f"Not making {lemma} searchable")
 
 
-def add_dictentry_to_stems(dict_entry, dictprefix, src, target):
+def add_dictentry_to_stems(
+    dict_entry: DictEntry, dictprefix: str, src: str, target: str
+):
     for lookup_lemma in dict_entry.lookupLemmas:
         add_to_stems(
             sammallahti_replacer(lookup_lemma.lemma)
@@ -311,16 +342,22 @@ def add_dictentry_to_stems(dict_entry, dictprefix, src, target):
                 )
 
 
-def make_dict_entries(dictxml, dictprefix, src, target):
+def make_dict_entries(
+    dictxml: etree.ElementTree, dictprefix: str, src: str, target: str
+) -> Iterable[DictEntry]:
     for entry in dictxml.iter("e"):
         if (
             f"{src}{target}" not in ["smesma", "smasme"] and entry.get("src") != "gg"
         ) or (
             f"{src}{target}" in ["smesma", "smasme"] and entry.get("note") == "checked"
         ):
-            translation_groups = make_translation_groups(
-                entry.xpath(".//tg"), target, dictprefix
-            )
+            translation_groups = [
+                tg
+                for tg in make_translation_groups(
+                    entry.xpath(".//tg"), target, dictprefix
+                )
+                if tg is not None
+            ]
             if translation_groups:
                 dict_entry = DictEntry(
                     dictName=f"{dictprefix}{src}{target}",
@@ -338,8 +375,12 @@ def make_dict_entries(dictxml, dictprefix, src, target):
                     print(str(error))
 
 
-def make_entries(dictxml, dictprefix):
+def make_entries(dictxml: etree.ElementTree, dictprefix: str) -> None:
     pair = dictxml.getroot().get("id")
+    if pair is None or len(pair) < 4:
+        print(f"Invalid dictionary id: {pair}")
+        return
+
     src = pair[:3]
     target = "nob" if pair[3:] == "mul" else pair[3:]
 
@@ -347,42 +388,45 @@ def make_entries(dictxml, dictprefix):
         add_dictentry_to_stems(dict_entry, dictprefix, src, target)
 
 
-def import_dictfile(xml_file):
+def import_dictfile(xml_file: str) -> None:
     print(f"\t{os.path.basename(xml_file)}")
     dictxml = parse_xmlfile(xml_file)
     make_entries(dictxml, dictprefix="gt")
 
 
-def dict_paths():
+def dict_paths() -> list[str]:
     gut_home = os.getenv("GUTHOME")
     if gut_home is None:
         raise EnvironmentError("GUTHOME environment variable is not set.")
-    
+
     return [
         xml_file
         for pair in DICTS
         for xml_file in glob.glob(
-            os.path.join(gut_home, "giellalt", f"dict-{pair}", "src")
-            + "/*.xml"
+            os.path.join(gut_home, "giellalt", f"dict-{pair}", "src") + "/*.xml"
         )
         if not xml_file.endswith("meta.xml") and "Der_" not in xml_file
     ]
 
 
-def import_dicts():
+def import_dicts() -> None:
     for xml_file in dict_paths():
         import_dictfile(xml_file)
 
 
-def parse_xmlfile(xml_file):
+def parse_xmlfile(xml_file: str) -> etree.ElementTree:
     parser = etree.XMLParser(remove_comments=True)
     return etree.parse(xml_file, parser=parser)
 
 
 def import_sammallahti():
     print("Pekka Sammallahtis sme-fin dictionary")
+    gut_home = os.getenv("GUTHOME")
+    if gut_home is None:
+        raise EnvironmentError("GUTHOME environment variable is not set.")
+
     xml_file = os.path.join(
-        os.getenv("GUTHOME"),
+        gut_home,
         "giellalt",
         "dict-sme-fin-x-sammallahti",
         "src",
@@ -404,9 +448,12 @@ def import_sammallahti():
 
 def import_smjmed():
     print("Hábmers medicinal smj-nob-smj dictionaries")
-    habmer_home = os.path.join(
-        os.getenv("GUTHOME"), "giellalt", "dict-smj-nob-x-habmer"
-    )
+
+    gut_home = os.getenv("GUTHOME")
+    if gut_home is None:
+        raise EnvironmentError("GUTHOME environment variable is not set.")
+
+    habmer_home = os.path.join(gut_home, "giellalt", "dict-smj-nob-x-habmer")
     for xml_file in glob.glob(f"{habmer_home}/*.xml"):
         print(f"\t{os.path.basename(xml_file)}")
         try:
@@ -424,11 +471,15 @@ def import_smjmed():
 
 def import_sms():
     print("sms dicts")
+
+    gut_home = os.getenv("GUTHOME")
+    if gut_home is None:
+        raise EnvironmentError("GUTHOME environment variable is not set.")
+
     dictprefix = "gt"
     for lang in ["fin", "nob", "rus"]:
         for xml_file in glob.glob(
-            os.path.join(os.getenv("GUTHOME"), "giellalt", f"dict-{lang}-sms", "src")
-            + "/*.xml"
+            os.path.join(gut_home, "giellalt", f"dict-{lang}-sms", "src") + "/*.xml"
         ):
             if not xml_file.endswith("meta.xml") and "Der_" not in xml_file:
                 print(xml_file)
@@ -438,7 +489,7 @@ def import_sms():
                     add_dictentry_to_stems(dict_entry, dictprefix, lang, "sms")
 
     for xml_file in glob.glob(
-        os.path.join(os.getenv("GUTHOME"), "giellalt", "dict-sms-mul", "src") + "/*.xml"
+        os.path.join(gut_home, "giellalt", "dict-sms-mul", "src") + "/*.xml"
     ):
         if not xml_file.endswith("meta.xml") and "Der_" not in xml_file:
             dictxml = parse_xmlfile(xml_file)
@@ -448,7 +499,7 @@ def import_sms():
                     add_dictentry_to_stems(dict_entry, dictprefix, "sms", lang)
 
 
-def make_stems():
+def make_stems() -> None:
     for stem in STEMS:
         try:
             s = Stem(
