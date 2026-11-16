@@ -298,11 +298,17 @@ def make_translation_group(
 def make_translation_groups(
     translation_groups: Iterable[etree.Element], target: str, dictprefix: str
 ) -> Iterator[TranslationGroup | None]:
+    """Make translation groups for a given target language.
+
+    Translation groups are filtered to only include those that have a translation in the
+    target language (explicitly set) or have no language specified (implicitly set).
+    """
     return (
         make_translation_group(translation_group, target, dictprefix)
         for translation_group in translation_groups
         if (
-            translation_group.get("{http://www.w3.org/XML/1998/namespace}lang")
+            translation_group.get("{http://www.w3.org/XML/1998/namespace}lang") is None
+            or translation_group.get("{http://www.w3.org/XML/1998/namespace}lang")
             == target
         )
     )
