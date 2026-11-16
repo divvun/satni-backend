@@ -80,7 +80,7 @@ def make_lemma(lang: str, expression: RelatedExpression) -> Lemma:
             dialect=None,
             country=None,
         )
-        lemma.save()
+        lemma.save()  # type: ignore[misc]
         LEMMAS[lemma_key] = lemma
 
     return LEMMAS[lemma_key]
@@ -152,7 +152,7 @@ def make_concepts(title: str, termwiki_concept: TermWikiPage, valid_langs: set[s
             and termwiki_concept.concept.collection is not None
             else set(),
         )
-        c.save()
+        c.save()  # type: ignore[misc]
 
 
 def make_m():
@@ -220,7 +220,7 @@ def make_dict_lemma(element: etree.Element, lang: str, dictprefix: str) -> Lemma
             dialect=element.get("dialect"),
             country=element.get("country"),
         )
-        lemma.save()
+        lemma.save()  # type: ignore[misc]
         LEMMAS[lemma_key] = lemma
 
     return LEMMAS[lemma_key]
@@ -527,7 +527,7 @@ def make_stems() -> None:
                 targetlangs=list(STEMS[stem]["tolangs"]),
                 dicts=list(STEMS[stem]["dicts"]),
             )
-            s.save()
+            s.save()  # type: ignore[misc]
         except ValidationError as error:
             print(error)
             print(stem)
