@@ -9,7 +9,16 @@ from mongoengine.fields import StringField
 class Lemma(Document):
     """A representation of lemmas."""
 
-    meta = {"collection": "lemmas", "indexes": ["lemma"]}
+    meta = {
+        "collection": "lemmas",
+        "indexes": [
+            "lemma",
+            ("lemma", "presentation_lemma", "pos", "language"),
+        ],
+        "unique_indexes": [
+            ("lemma", "presentation_lemma", "pos", "language"),
+        ],
+    }
     lemma: Annotated[str, StringField(required=True)] = StringField(required=True)
     presentation_lemma: Annotated[str, StringField(required=True)] = StringField(required=True)
     pos: Annotated[str | None, StringField()] = StringField()
