@@ -418,11 +418,7 @@ def import_dictfile(xml_file: str) -> None:
     make_entries(dictxml, dictprefix="gt")
 
 
-def dict_paths() -> list[str]:
-    gut_home = os.getenv("GUTHOME")
-    if gut_home is None:
-        raise EnvironmentError("GUTHOME environment variable is not set.")
-
+def dict_paths(gut_home: str) -> list[str]:
     return [
         xml_file
         for pair in DICTS
@@ -433,8 +429,8 @@ def dict_paths() -> list[str]:
     ]
 
 
-def import_dicts() -> None:
-    for xml_file in dict_paths():
+def import_dicts(gut_home: str) -> None:
+    for xml_file in dict_paths(gut_home):
         import_dictfile(xml_file)
 
 
@@ -443,11 +439,8 @@ def parse_xmlfile(xml_file: str) -> etree.ElementTree:
     return etree.parse(xml_file, parser=parser)
 
 
-def import_sammallahti():
+def import_sammallahti(gut_home: str) -> None:
     print("Pekka Sammallahtis sme-fin dictionary")
-    gut_home = os.getenv("GUTHOME")
-    if gut_home is None:
-        raise EnvironmentError("GUTHOME environment variable is not set.")
 
     xml_file = os.path.join(
         gut_home,
@@ -470,12 +463,8 @@ def import_sammallahti():
         print("Continuing without Sammallahti's dictionary")
 
 
-def import_smjmed():
+def import_smjmed(gut_home: str) -> None:
     print("Hábmers medicinal smj-nob-smj dictionaries")
-
-    gut_home = os.getenv("GUTHOME")
-    if gut_home is None:
-        raise EnvironmentError("GUTHOME environment variable is not set.")
 
     habmer_home = os.path.join(gut_home, "giellalt", "dict-smj-nob-x-habmer")
     for xml_file in glob.glob(f"{habmer_home}/*.xml"):
@@ -493,12 +482,8 @@ def import_smjmed():
             print(f"Continuing without {xml_file}")
 
 
-def import_sms():
+def import_sms(gut_home: str) -> None:
     print("sms dicts")
-
-    gut_home = os.getenv("GUTHOME")
-    if gut_home is None:
-        raise EnvironmentError("GUTHOME environment variable is not set.")
 
     dictprefix = "gt"
     for lang in ["fin", "nob", "rus"]:
@@ -540,9 +525,13 @@ def make_stems() -> None:
 
 
 def run():
-    import_sammallahti()
-    import_dicts()
+    gut_home = os.getenv("GUTHOME")
+    if gut_home is None:
+        raise EnvironmentError("GUTHOME environment variable is not set.")
+
+    import_sammallahti(gut_home)
+    import_dicts(gut_home)
     make_m()
-    import_smjmed()
-    import_sms()
+    import_smjmed(gut_home)
+    import_sms(gut_home)
     make_stems()
