@@ -1,6 +1,7 @@
 """Check whether the dictionary files are valid."""
 
 from datetime import datetime
+import os
 
 from lxml import etree
 
@@ -18,9 +19,9 @@ def validate_dictfile(xml_file):
         return f"{xml_file}:\n\t{error}"
 
 
-def invalid_dicts():
+def invalid_dicts(gut_home):
     """Yield invalid dict files."""
-    for xml_file in dict_paths():
+    for xml_file in dict_paths(gut_home):
         invalid = validate_dictfile(xml_file)
         if invalid is not None:
             yield invalid
@@ -42,7 +43,11 @@ def update_env(env_path):
 
 def run():
     """Update .env if all xml files are valid."""
-    invalids = list(invalid_dicts())
+    gut_home = os.getenv("GUTHOME")
+    if gut_home is None:
+        raise EnvironmentError("GUTHOME environment variable is not set.")
+
+    invalids = list(invalid_dicts(gut_home))
     if invalids:
         raise SystemExit(
             "Invalid dicts, stopping import:\n{}".format("\n".join(invalids))
