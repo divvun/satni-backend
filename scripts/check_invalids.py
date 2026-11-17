@@ -2,24 +2,27 @@
 
 from datetime import datetime
 import os
+from typing import Generator
 
 from lxml import etree
 
 from .from_dump import dict_paths, parse_xmlfile
 
 
-def validate_dictfile(xml_file):
+def validate_dictfile(xml_file: str) -> str | None:
     """Check if the given xml_file is valid xml."""
     try:
         dictxml = parse_xmlfile(xml_file)
         pair = dictxml.getroot().get("id")
-        if pair not in xml_file:
+        if pair is not None and pair not in xml_file:
             return f"{xml_file}:\n\tinvalid id: {pair}"
     except etree.XMLSyntaxError as error:
         return f"{xml_file}:\n\t{error}"
 
+    return None
 
-def invalid_dicts(gut_home):
+
+def invalid_dicts(gut_home: str) -> Generator[str, None, None]:
     """Yield invalid dict files."""
     for xml_file in dict_paths(gut_home):
         invalid = validate_dictfile(xml_file)
@@ -27,7 +30,7 @@ def invalid_dicts(gut_home):
             yield invalid
 
 
-def update_env(env_path):
+def update_env(env_path: str) -> None:
     """Update the datebase name."""
     with open(env_path) as env:
         lines = [
